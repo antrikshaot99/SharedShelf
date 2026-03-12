@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Brand Colors */
+  --primary: #c97456;
+  --primary-light: #e8a990;
+  --primary-lighter: #fef5f1;
+  --primary-dark: #a55d40;
+  
+  /* Neutrals */
+  --ink-950: #1a1614;
+  --ink-900: #2b2522;
+  --ink-800: #3d3935;
+  --ink-700: #544e49;
+  --ink-600: #6d665f;
+  --ink-500: #8a8179;
+  --ink-400: #a8a099;
+  --ink-300: #c5bfb9;
+  --ink-200: #e2deda;
+  --ink-100: #f1efed;
+  --ink-50: #faf9f8;
+  
+  /* Accent Colors */
+  --accent-purple: #7c5cff;
+  --accent-green: #10b981;
+  --accent-blue: #3b82f6;
+  --accent-amber: #f59e0b;
+  --accent-red: #ef4444;
+  
+  /* Gradients */
+  --gradient-warm: linear-gradient(135deg, #fef5f1 0%, #f9ede6 50%, #f0e3da 100%);
+  --gradient-primary: linear-gradient(135deg, #c97456 0%, #a55d40 100%);
+  --gradient-dark: linear-gradient(135deg, #2b2522 0%, #1a1614 100%);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(26, 22, 20, 0.04);
+  --shadow-md: 0 2px 8px rgba(26, 22, 20, 0.06), 0 1px 3px rgba(26, 22, 20, 0.04);
+  --shadow-lg: 0 4px 16px rgba(26, 22, 20, 0.08), 0 2px 6px rgba(26, 22, 20, 0.04);
+  --shadow-xl: 0 8px 32px rgba(26, 22, 20, 0.12), 0 4px 12px rgba(26, 22, 20, 0.06);
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  
+  /* Typography */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', -apple-system, system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--ink-50);
+  color: var(--ink-900);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: var(--font-body);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+input, textarea, select {
+  font-family: var(--font-body);
+  transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--primary-lighter);
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ink-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink-300);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-400);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
