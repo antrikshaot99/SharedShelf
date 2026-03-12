@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_MY_CART } from "../graphql/queries";
 import { ADD_TO_CART, UPDATE_CART_ITEM, REMOVE_FROM_CART, CLEAR_CART } from "../graphql/mutations";
 

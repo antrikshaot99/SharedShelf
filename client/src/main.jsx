@@ -13,6 +13,7 @@ import {
 
 import { ApolloProvider } from "@apollo/client/react";
 import "./index.css";
+import "./App.css";
 
 // Authentication link to inject JWT token into requests
 const authLink = new ApolloLink((operation, forward) => {

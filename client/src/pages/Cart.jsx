@@ -5,176 +5,402 @@ import { useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
 
 export default function Cart() {
-  const { cart, addToCart, removeFromCart, clearCart } =
-    useContext(CartContext);
+  const { cart, addToCart, removeFromCart, clearCart } = useContext(CartContext);
   const { placeOrder } = useContext(OrderContext);
   const navigate = useNavigate();
 
+  const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const itemCount = cart.reduce((s, i) => s + i.quantity, 0);
+
   return (
-    <div style={{ minHeight: "100vh", background: "var(--gradient-warm)" }}>
-      {/* ===== NAVBAR ===== */}
+    <div style={{ minHeight: "100vh", background: "var(--ink-100)" }}>
+      {/* Header */}
       <div style={{
         background: "white",
-        padding: "16px 32px",
+        borderBottom: "1px solid var(--ink-200)",
+        padding: "0 48px",
+        height: 64,
         display: "flex",
-        justifyContent: "space-between",
         alignItems: "center",
-        boxShadow: "var(--shadow-sm)",
-        borderBottom: "1px solid var(--ink-100)",
+        justifyContent: "space-between",
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
       }}>
         <div style={{ cursor: "pointer" }} onClick={() => navigate("/dashboard")}>
           <Logo size="md" variant="full" />
         </div>
-        <button onClick={() => navigate("/dashboard")} style={{
-          padding: "9px 20px", borderRadius: "var(--radius-md)", border: "1.5px solid var(--ink-200)",
-          cursor: "pointer", fontWeight: 600, fontSize: 13,
-          background: "white", color: "var(--ink-700)",
-        }}>← Continue Shopping</button>
+        <button
+          onClick={() => navigate("/dashboard")}
+          style={{
+            padding: "10px 20px",
+            borderRadius: 12,
+            border: "1.5px solid var(--ink-200)",
+            background: "white",
+            color: "var(--ink-700)",
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          ← Continue Shopping
+        </button>
       </div>
 
-      {/* ===== CONTENT ===== */}
-      <div style={{ maxWidth: 800, margin: "0 auto", padding: "48px 24px" }}>
-        <h1 style={{ 
-          fontSize: 38, 
-          fontWeight: 700,
-          fontFamily: "var(--font-display)",
-          color: "var(--ink-950)", 
-          marginBottom: 12,
-          letterSpacing: "-0.02em"
-        }}>Shopping Cart</h1>
-        <p style={{ 
-          fontSize: 15, 
-          color: "var(--ink-500)", 
-          marginBottom: 32 
-        }}>Review your items before checkout</p>
+      {/* Content */}
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "40px 24px" }}>
+        {/* Page Header */}
+        <div style={{ marginBottom: 32 }}>
+          <h1 style={{
+            fontSize: 32,
+            fontWeight: 700,
+            color: "var(--ink-900)",
+            marginBottom: 8,
+          }}>
+            Shopping Cart
+          </h1>
+          <p style={{ fontSize: 15, color: "var(--ink-500)" }}>
+            {itemCount > 0 
+              ? `You have ${itemCount} item${itemCount > 1 ? "s" : ""} in your cart`
+              : "Your cart is empty"
+            }
+          </p>
+        </div>
 
         {cart.length === 0 ? (
+          /* Empty State */
           <div style={{
-            textAlign: "center", padding: 80, background: "white",
-            borderRadius: "var(--radius-xl)", boxShadow: "var(--shadow-md)",
-            border: "1px solid var(--ink-100)",
+            background: "white",
+            borderRadius: 20,
+            padding: 80,
+            textAlign: "center",
+            border: "1px solid var(--ink-200)",
           }}>
-            <div style={{ fontSize: 64, marginBottom: 16 }}>🛒</div>
-            <h3 style={{ 
-              fontSize: 20, 
+            <div style={{
+              width: 80,
+              height: 80,
+              borderRadius: 20,
+              background: "var(--primary-lighter)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 40,
+              margin: "0 auto 24px",
+            }}>
+              🛒
+            </div>
+            <h2 style={{
+              fontSize: 24,
               fontWeight: 700,
-              fontFamily: "var(--font-display)",
-              color: "var(--ink-900)", 
-              marginBottom: 8 
-            }}>Your cart is empty</h3>
-            <p style={{ fontSize: 15, color: "var(--ink-500)", marginBottom: 24 }}>Start adding books to get started</p>
-            <button onClick={() => navigate("/dashboard")} style={{
-              padding: "12px 32px", borderRadius: "var(--radius-md)", border: "none",
-              background: "var(--gradient-primary)", color: "white", fontWeight: 600, fontSize: 14, cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(201, 116, 86, 0.25)",
-            }}>Browse Books</button>
+              color: "var(--ink-900)",
+              marginBottom: 8,
+            }}>
+              Your cart is empty
+            </h2>
+            <p style={{
+              fontSize: 15,
+              color: "var(--ink-500)",
+              marginBottom: 32,
+              maxWidth: 300,
+              margin: "0 auto 32px",
+            }}>
+              Looks like you haven't added any books to your cart yet.
+            </p>
+            <button
+              onClick={() => navigate("/dashboard")}
+              style={{
+                padding: "14px 32px",
+                borderRadius: 12,
+                border: "none",
+                background: "var(--gradient-primary)",
+                color: "white",
+                fontSize: 15,
+                fontWeight: 600,
+                cursor: "pointer",
+                boxShadow: "var(--shadow-primary)",
+              }}
+            >
+              Browse Books
+            </button>
           </div>
         ) : (
-          <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <span style={{ fontSize: 14, color: "var(--ink-600)", fontWeight: 600 }}>
-                {cart.length} {cart.length === 1 ? "item" : "items"} in cart
-              </span>
-              <button onClick={clearCart} style={{
-                padding: "8px 18px", border: "none",
-                background: "var(--accent-red)", 
-                color: "white", 
-                borderRadius: "var(--radius-md)",
-                cursor: "pointer", fontWeight: 600, fontSize: 13,
-                boxShadow: "var(--shadow-sm)",
-              }}>Clear Cart</button>
-            </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 24 }}>
+            {/* Cart Items */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {/* Clear Cart Button */}
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <button
+                  onClick={clearCart}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: 10,
+                    border: "none",
+                    background: "#fef2f2",
+                    color: "var(--accent-red)",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Clear Cart
+                </button>
+              </div>
 
-            {cart.map((item) => (
-              <div key={item.id} style={{
-                background: "white", padding: 24, borderRadius: "var(--radius-lg)",
-                marginBottom: 16, display: "flex", justifyContent: "space-between",
-                alignItems: "center", boxShadow: "var(--shadow-md)",
-                border: "1px solid var(--ink-100)",
-                transition: "all 0.2s ease",
-              }} onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = "var(--shadow-lg)";
-              }} onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = "var(--shadow-md)";
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 20, flex: 1 }}>
+              {/* Items */}
+              {cart.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    background: "white",
+                    borderRadius: 16,
+                    padding: 20,
+                    border: "1px solid var(--ink-200)",
+                    display: "flex",
+                    gap: 20,
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  {/* Book Icon */}
                   <div style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: "var(--radius-md)",
+                    width: 80,
+                    height: 100,
+                    borderRadius: 12,
                     background: "var(--primary-lighter)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: 28,
+                    fontSize: 36,
                     flexShrink: 0,
-                  }}>📖</div>
-                  <div>
-                    <h3 style={{ 
-                      fontSize: 17, 
+                  }}>
+                    📖
+                  </div>
+
+                  {/* Info */}
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{
+                      fontSize: 17,
                       fontWeight: 700,
-                      fontFamily: "var(--font-display)",
-                      color: "var(--ink-900)", 
-                      marginBottom: 4 
-                    }}>{item.title}</h3>
-                    <p style={{ fontSize: 14, color: "var(--ink-500)", marginBottom: 8 }}>{item.author}</p>
-                    <p style={{ 
-                      fontSize: 16, 
-                      fontWeight: 700, 
-                      color: "var(--primary)" 
+                      color: "var(--ink-900)",
+                      marginBottom: 4,
                     }}>
-                      ₹{item.price} × {item.quantity} = ₹{item.price * item.quantity}
+                      {item.title}
+                    </h3>
+                    <p style={{
+                      fontSize: 14,
+                      color: "var(--ink-500)",
+                      marginBottom: 12,
+                    }}>
+                      by {item.author}
                     </p>
+                    <div style={{
+                      fontSize: 18,
+                      fontWeight: 700,
+                      color: "var(--primary)",
+                    }}>
+                      ₹{item.price}
+                    </div>
+                  </div>
+
+                  {/* Quantity Controls */}
+                  <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    justifyContent: "space-between",
+                  }}>
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      background: "var(--ink-100)",
+                      borderRadius: 12,
+                      padding: 4,
+                    }}>
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 10,
+                          border: "none",
+                          background: "white",
+                          cursor: "pointer",
+                          fontSize: 18,
+                          fontWeight: 700,
+                          color: "var(--ink-600)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        −
+                      </button>
+                      <span style={{
+                        fontWeight: 700,
+                        fontSize: 16,
+                        minWidth: 24,
+                        textAlign: "center",
+                        color: "var(--ink-900)",
+                      }}>
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => addToCart(item)}
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 10,
+                          border: "none",
+                          background: "var(--gradient-primary)",
+                          cursor: "pointer",
+                          fontSize: 18,
+                          fontWeight: 700,
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <div style={{
+                      fontSize: 16,
+                      fontWeight: 700,
+                      color: "var(--ink-900)",
+                    }}>
+                      ₹{item.price * item.quantity}
+                    </div>
                   </div>
                 </div>
+              ))}
+            </div>
 
-                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                  <button onClick={() => removeFromCart(item.id)} style={{
-                    width: 40, height: 40, borderRadius: "var(--radius-md)", border: "1.5px solid var(--ink-200)",
-                    background: "white", cursor: "pointer", fontSize: 20, fontWeight: 700, color: "var(--ink-600)",
-                  }}>−</button>
-                  <span style={{ 
-                    fontWeight: 700, 
-                    fontSize: 17, 
-                    minWidth: 32, 
-                    textAlign: "center",
-                    color: "var(--ink-900)"
-                  }}>{item.quantity}</span>
-                  <button onClick={() => addToCart(item)} style={{
-                    width: 40, height: 40, borderRadius: "var(--radius-md)", border: "none",
-                    background: "var(--gradient-primary)", cursor: "pointer", fontSize: 20, fontWeight: 700, color: "white",
-                    boxShadow: "var(--shadow-sm)",
-                  }}>+</button>
+            {/* Order Summary */}
+            <div style={{
+              background: "white",
+              borderRadius: 20,
+              padding: 28,
+              border: "1px solid var(--ink-200)",
+              height: "fit-content",
+              position: "sticky",
+              top: 88,
+            }}>
+              <h2 style={{
+                fontSize: 18,
+                fontWeight: 700,
+                color: "var(--ink-900)",
+                marginBottom: 24,
+              }}>
+                Order Summary
+              </h2>
+
+              <div style={{ marginBottom: 24 }}>
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 12,
+                  fontSize: 14,
+                  color: "var(--ink-600)",
+                }}>
+                  <span>Subtotal ({itemCount} items)</span>
+                  <span style={{ fontWeight: 600, color: "var(--ink-900)" }}>₹{total}</span>
+                </div>
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 12,
+                  fontSize: 14,
+                  color: "var(--ink-600)",
+                }}>
+                  <span>Shipping</span>
+                  <span style={{ fontWeight: 600, color: "var(--accent-green)" }}>Free</span>
+                </div>
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: 14,
+                  color: "var(--ink-600)",
+                }}>
+                  <span>Tax</span>
+                  <span style={{ fontWeight: 600, color: "var(--ink-900)" }}>₹0</span>
                 </div>
               </div>
-            ))}
 
-            <div style={{
-              background: "white", padding: 32, borderRadius: "var(--radius-xl)",
-              marginTop: 24, boxShadow: "var(--shadow-lg)",
-              border: "1px solid var(--ink-100)",
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-                <div>
-                  <p style={{ fontSize: 14, color: "var(--ink-500)", marginBottom: 4 }}>Total Amount</p>
-                  <p style={{ 
-                    fontSize: 36, 
-                    fontWeight: 700,
-                    fontFamily: "var(--font-display)",
-                    color: "var(--ink-950)" 
-                  }}>
-                    ₹{cart.reduce((s, i) => s + i.price * i.quantity, 0)}
-                  </p>
+              <div style={{
+                borderTop: "1px solid var(--ink-200)",
+                paddingTop: 20,
+                marginBottom: 24,
+              }}>
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}>
+                  <span style={{ fontSize: 16, fontWeight: 600, color: "var(--ink-900)" }}>Total</span>
+                  <span style={{ fontSize: 28, fontWeight: 800, color: "var(--ink-900)" }}>₹{total}</span>
                 </div>
-                <button onClick={() => { placeOrder(cart); clearCart(); navigate("/orders"); }} style={{
-                  padding: "16px 40px", borderRadius: "var(--radius-md)", border: "none",
-                  background: "var(--gradient-primary)", color: "white", fontWeight: 700,
-                  fontSize: 16, cursor: "pointer",
-                  boxShadow: "0 4px 16px rgba(201, 116, 86, 0.3)",
-                }}>Proceed to Checkout</button>
+              </div>
+
+              <button
+                onClick={() => {
+                  placeOrder(cart);
+                  clearCart();
+                  navigate("/orders");
+                }}
+                style={{
+                  width: "100%",
+                  padding: "16px",
+                  borderRadius: 14,
+                  border: "none",
+                  background: "var(--gradient-primary)",
+                  color: "white",
+                  fontSize: 16,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  boxShadow: "var(--shadow-primary)",
+                  marginBottom: 12,
+                }}
+              >
+                Checkout Now
+              </button>
+
+              <button
+                onClick={() => navigate("/checkout")}
+                style={{
+                  width: "100%",
+                  padding: "14px",
+                  borderRadius: 14,
+                  border: "1.5px solid var(--ink-200)",
+                  background: "white",
+                  color: "var(--ink-700)",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                Proceed to Checkout Page
+              </button>
+
+              {/* Secure Badge */}
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                marginTop: 20,
+                padding: 12,
+                background: "var(--ink-50)",
+                borderRadius: 10,
+              }}>
+                <span style={{ fontSize: 16 }}>🔒</span>
+                <span style={{ fontSize: 13, color: "var(--ink-500)" }}>Secure checkout</span>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

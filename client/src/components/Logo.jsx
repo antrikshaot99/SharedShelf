@@ -1,9 +1,9 @@
 export default function Logo({ size = "md", variant = "default" }) {
   const sizes = {
-    sm: { container: 32, icon: 20, text: 16 },
-    md: { container: 40, icon: 24, text: 20 },
-    lg: { container: 56, icon: 32, text: 28 },
-    xl: { container: 72, icon: 40, text: 36 },
+    sm: { container: 32, icon: 18, text: 16 },
+    md: { container: 40, icon: 22, text: 18 },
+    lg: { container: 52, icon: 28, text: 24 },
+    xl: { container: 64, icon: 34, text: 32 },
   };
 
   const s = sizes[size];
@@ -13,29 +13,30 @@ export default function Logo({ size = "md", variant = "default" }) {
     <div style={{ 
       display: "flex", 
       alignItems: "center", 
-      gap: size === "sm" ? 8 : size === "md" ? 10 : 12 
+      gap: size === "sm" ? 8 : size === "md" ? 10 : 14 
     }}>
       {/* Logo Icon */}
       <div style={{
         width: s.container,
         height: s.container,
-        borderRadius: size === "sm" ? 8 : size === "md" ? 10 : 12,
-        background: "linear-gradient(135deg, #c97456 0%, #a55d40 100%)",
+        borderRadius: size === "sm" ? 8 : size === "md" ? 10 : 14,
+        background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        boxShadow: "0 2px 8px rgba(201, 116, 86, 0.25)",
+        boxShadow: "0 4px 14px rgba(99, 102, 241, 0.35)",
         position: "relative",
         overflow: "hidden",
       }}>
-        {/* Book Pages Effect */}
+        {/* Decorative Circle */}
         <div style={{
           position: "absolute",
+          top: "-30%",
+          right: "-30%",
           width: "60%",
-          height: "70%",
-          background: "linear-gradient(90deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)",
-          borderRadius: 2,
-          transform: "skewY(-10deg)",
+          height: "60%",
+          background: "rgba(255,255,255,0.15)",
+          borderRadius: "50%",
         }} />
         
         {/* Book Icon */}
@@ -84,7 +85,7 @@ export default function Logo({ size = "md", variant = "default" }) {
       {/* Logo Text */}
       {(showText || variant === "default") && (
         <span style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "var(--font-body)",
           fontSize: s.text,
           fontWeight: 700,
           color: "var(--ink-900)",

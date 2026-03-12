@@ -47,7 +47,7 @@ Rental.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 Rental.belongsTo(Book, { foreignKey: 'book_id', as: 'book' });
 
 // Sync database
-sequelize.sync({ alter: false }) // Set to true in development if needed
+sequelize.sync({ alter: true }) // Set to true in development if needed
   .then(() => console.log('📚 Database synced successfully'))
   .catch(err => console.error('Database sync error:', err));
 

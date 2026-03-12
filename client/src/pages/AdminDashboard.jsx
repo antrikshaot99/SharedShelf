@@ -7,14 +7,15 @@ import Logo from "../components/Logo";
 
 /* ─── Design Tokens ─── */
 const C = {
-  coral: "var(--primary)", coralLight: "var(--primary-lighter)", coralDark: "var(--primary-dark)",
-  purple: "var(--accent-purple)", purpleLight: "#eeedff",
+  primary: "var(--primary)", primaryLight: "var(--primary-lighter)", primaryDark: "var(--primary-dark)",
+  purple: "#8b5cf6", purpleLight: "#f3e8ff",
   green: "var(--accent-green)", greenLight: "#ecfdf5",
   orange: "var(--accent-amber)", orangeLight: "#fffbeb",
   red: "var(--accent-red)", redLight: "#fef2f2",
   blue: "var(--accent-blue)", blueLight: "#eff6ff",
+  cyan: "#06b6d4", cyanLight: "#ecfeff",
   dark: "var(--ink-950)", dark2: "var(--ink-900)", muted: "var(--ink-500)", muted2: "var(--ink-400)",
-  cream: "var(--ink-50)", white: "var(--gradient-warm)",
+  cream: "var(--ink-100)", white: "white",
   border: "var(--ink-200)", borderLight: "var(--ink-100)",
 };
 
@@ -59,9 +60,9 @@ const Avatar = ({ name, color }) => (
 
 const Loader = () => (
   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 80, gap: 8 }}>
-    <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.coral, animation: "pulse 1s ease infinite" }} />
-    <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.coral, animation: "pulse 1s ease 0.2s infinite" }} />
-    <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.coral, animation: "pulse 1s ease 0.4s infinite" }} />
+    <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.primary, animation: "pulse 1s ease infinite" }} />
+    <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.primary, animation: "pulse 1s ease 0.2s infinite" }} />
+    <div style={{ width: 8, height: 8, borderRadius: "50%", background: C.primary, animation: "pulse 1s ease 0.4s infinite" }} />
   </div>
 );
 
@@ -103,11 +104,11 @@ function OverviewTab() {
   const genreMap = {};
   allBooks.forEach((b) => { genreMap[b.genre] = (genreMap[b.genre] || 0) + 1; });
   const genreEntries = Object.entries(genreMap).sort((a, b) => b[1] - a[1]).slice(0, 6);
-  const genreColors = [C.coral, C.purple, C.green, C.orange, C.blue, C.red];
+  const genreColors = [C.primary, C.purple, C.green, C.orange, C.blue, C.red];
 
   const statCards = [
     { label: "Total Users", value: stats.totalUsers ?? 0, icon: "👥", color: C.purple, bg: C.purpleLight, sub: "Registered accounts" },
-    { label: "Total Books", value: stats.totalBooks ?? 0, icon: "📚", color: C.coral, bg: C.coralLight, sub: "Listed on platform" },
+    { label: "Total Books", value: stats.totalBooks ?? 0, icon: "📚", color: C.primary, bg: C.primaryLight, sub: "Listed on platform" },
     { label: "Genres", value: stats.totalGenres ?? 0, icon: "🏷️", color: C.green, bg: C.greenLight, sub: "Unique categories" },
     { label: "Orders", value: orders.length, icon: "📦", color: C.orange, bg: C.orangeLight, sub: "Total placed" },
   ];
@@ -125,7 +126,7 @@ function OverviewTab() {
       {/* Welcome Banner */}
       <div style={{
         ...cardBase, padding: "32px 36px",
-        background: `linear-gradient(135deg, ${C.coral} 0%, ${C.coralDark} 100%)`,
+        background: `linear-gradient(135deg, ${C.primary} 0%, ${C.primaryDark} 100%)`,
         border: "none", color: C.white, position: "relative", overflow: "hidden",
       }}>
         <div style={{ position: "absolute", right: -20, top: -20, fontSize: 120, opacity: 0.1 }}>📚</div>
@@ -213,7 +214,7 @@ function OverviewTab() {
         <div style={cardBase}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
             <h3 style={{ fontSize: 16, fontWeight: 800, color: C.dark2 }}>Recent Books</h3>
-            <span style={{ fontSize: 11, padding: "4px 10px", borderRadius: 8, background: C.coralLight, color: C.coral, fontWeight: 700 }}>
+            <span style={{ fontSize: 11, padding: "4px 10px", borderRadius: 8, background: C.primaryLight, color: C.primary, fontWeight: 700 }}>
               Latest {recentBooks.length}
             </span>
           </div>
@@ -227,14 +228,14 @@ function OverviewTab() {
                   }} onMouseEnter={e => e.currentTarget.style.background = C.cream}
                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                     <div style={{
-                      width: 40, height: 40, borderRadius: 10, background: C.coralLight,
+                      width: 40, height: 40, borderRadius: 10, background: C.primaryLight,
                       display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0,
                     }}>📖</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 13, fontWeight: 700, color: C.dark2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{b.title}</div>
                       <div style={{ fontSize: 11, color: C.muted }}>{b.author}</div>
                     </div>
-                    <Pill color={C.coral}>{b.genre}</Pill>
+                    <Pill color={C.primary}>{b.genre}</Pill>
                   </div>
                 ))}
               </div>
@@ -361,7 +362,7 @@ function BooksTab() {
                 <tbody>
                   {books.map((b) =>
                     editId === b.id ? (
-                      <tr key={b.id} style={{ background: C.coralLight + "60" }}>
+                      <tr key={b.id} style={{ background: C.primaryLight + "60" }}>
                         <td style={{ padding: "12px 18px" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                             {editInput("title")}
@@ -400,7 +401,7 @@ function BooksTab() {
                         <td style={{ padding: "14px 18px" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                             <div style={{
-                              width: 38, height: 38, borderRadius: 10, background: C.coralLight,
+                              width: 38, height: 38, borderRadius: 10, background: C.primaryLight,
                               display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0,
                             }}>📖</div>
                             <div>
@@ -409,7 +410,7 @@ function BooksTab() {
                             </div>
                           </div>
                         </td>
-                        <td style={{ padding: "14px" }}><Pill color={C.coral}>{b.genre}</Pill></td>
+                        <td style={{ padding: "14px" }}><Pill color={C.primary}>{b.genre}</Pill></td>
                         <td style={{ padding: "14px", fontSize: 13, fontWeight: 700, color: C.dark2 }}>{b.price ? `₹${b.price}` : "—"}</td>
                         <td style={{ padding: "14px", fontSize: 13, fontWeight: 600, color: C.muted }}>{b.rent_price ? `₹${b.rent_price}` : "—"}</td>
                         <td style={{ padding: "14px" }}><Pill color={statusColor(b.status || "available")}>{b.status || "available"}</Pill></td>
@@ -417,7 +418,7 @@ function BooksTab() {
                           <div style={{ display: "flex", gap: 6 }}>
                             <button onClick={() => startEdit(b)} style={{
                               padding: "6px 14px", borderRadius: 8, border: "none", cursor: "pointer",
-                              fontSize: 12, fontWeight: 700, background: C.coralLight, color: C.coral,
+                              fontSize: 12, fontWeight: 700, background: C.primaryLight, color: C.primary,
                               transition: "all 0.15s",
                             }}>Edit</button>
                             <button onClick={() => handleDelete(b.id)} style={{
@@ -552,7 +553,7 @@ function OrdersTab() {
       {/* Summary */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
         {[
-          { label: "Total Orders", value: orders.length, icon: "📦", color: C.coral, bg: C.coralLight },
+          { label: "Total Orders", value: orders.length, icon: "📦", color: C.primary, bg: C.primaryLight },
           { label: "Items Sold", value: totalItems, icon: "📚", color: C.purple, bg: C.purpleLight },
           { label: "Revenue", value: `₹${totalRevenue.toFixed(0)}`, icon: "💰", color: C.green, bg: C.greenLight },
         ].map((s) => (
@@ -606,7 +607,7 @@ function OrdersTab() {
                           ))}
                         </td>
                         <td style={{ padding: "14px", fontSize: 13, fontWeight: 700, color: C.dark2 }}>{qty}</td>
-                        <td style={{ padding: "14px", fontSize: 14, fontWeight: 800, color: C.coral }}>₹{total.toFixed(2)}</td>
+                        <td style={{ padding: "14px", fontSize: 14, fontWeight: 800, color: C.primary }}>₹{total.toFixed(2)}</td>
                         <td style={{ padding: "14px" }}><Pill color={C.green}>Completed</Pill></td>
                       </tr>
                     );
@@ -649,7 +650,7 @@ function SettingsTab() {
           <button onClick={save} style={{
             padding: "11px 24px", borderRadius: 10, border: "none", cursor: "pointer",
             fontSize: 13, fontWeight: 700, alignSelf: "flex-start",
-            background: saved ? C.green : C.coral, color: C.white,
+            background: saved ? C.green : C.primary, color: C.white,
             transition: "all 0.2s",
           }}>
             {saved ? "✓ Saved!" : "Save Changes"}
@@ -769,8 +770,8 @@ export default function AdminDashboard() {
                 display: "flex", alignItems: "center", gap: 12, padding: "11px 14px",
                 borderRadius: "var(--radius-md)", border: "none", cursor: "pointer", width: "100%",
                 fontSize: 13, fontWeight: active ? 700 : 600, textAlign: "left",
-                background: active ? C.coralLight : "transparent",
-                color: active ? C.coral : C.muted,
+                background: active ? C.primaryLight : "transparent",
+                color: active ? C.primary : C.muted,
                 transition: "all 0.15s",
               }}>
                 <span style={{ fontSize: 16 }}>{tab.icon}</span>
