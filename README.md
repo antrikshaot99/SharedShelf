@@ -1,4 +1,4 @@
-# 📚 BookNest - SharedShelf
+# 📚 SharedShelf
 
 A full-stack web application for buying, selling, and renting books. Built with modern technologies and designed for a seamless user experience.
 
