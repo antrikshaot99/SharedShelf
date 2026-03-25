@@ -23,14 +23,11 @@ BookNest
 │   ├── Pages (Landing, Login, Register, etc.)
 │   ├── Components (UI components, Forms)
 │   ├── GraphQL (Queries & Mutations)
-│   ├── Context (Authentication, Cart, Orders)
-│   ├── Hooks (Custom React hooks)
-│   └── Routes (Protected and public routes)
+│   └── Context (Authentication, Cart, Orders)
 └── Server (Node.js + Express + GraphQL + Sequelize)
     ├── GraphQL (Type Definitions & Resolvers)
     ├── Models (User, Book, Order, Rental, etc.)
     ├── Services (Business logic)
-    ├── Middleware (Authentication, validation)
     └── Config (Database configuration)
 ```
 
