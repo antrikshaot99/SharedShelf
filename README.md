@@ -119,145 +119,15 @@ npm run dev
 
 The application will open at `http://localhost:5173`
 
-## 📚 API Documentation
-
-### GraphQL Endpoints
-
-The API uses GraphQL for all operations. Access the GraphQL playground at:
-```
-http://localhost:4000/graphql
-```
-
-#### Authentication
-- `login(email, password)` - User login
-- `register(name, email, password)` - User registration
-
-#### Books
-- `getAllBooks()` - Get all books
-- `getBook(id)` - Get book details
-- `addBook(title, author, price, ...)` - Add a new book (seller)
-- `searchBooks(query)` - Search books
-- `getGenres()` - Get all book genres
-
-#### Cart
-- `addToCart(bookId, quantity)` - Add book to cart
-- `removeFromCart(bookId)` - Remove from cart
-- `updateCartQuantity(bookId, quantity)` - Update quantity
-- `getCart()` - Get cart items
-
-#### Orders
-- `createOrder(cartItems)` - Create an order
-- `getUserOrders()` - Get user orders
-- `getOrderDetails(orderId)` - Get order details
-
-#### Rentals
-- `rentBook(bookId, duration)` - Rent a book
-- `getUserRentals()` - Get active rentals
-- `returnRental(rentalId)` - Return rented book
-
-## 🔧 Configuration
-
-### Database Setup
-
-Make sure PostgreSQL is running and create a database:
-```sql
-CREATE DATABASE booknest;
-```
-
-Sequelize will automatically create tables based on models on first run.
-
-### Environment Variables
-
-**Server (.env)**
-- `DB_HOST` - Database host
-- `DB_USER` - Database user
-- `DB_PASSWORD` - Database password
-- `DB_NAME` - Database name
-- `JWT_SECRET` - Secret key for JWT tokens
-- `PORT` - Server port (default: 4000)
-
-**Client (.env)**
-- `VITE_API_URL` - GraphQL API endpoint
-
 ## 👤 Default Admin Account
 
 After setup, use these credentials to access the admin dashboard:
 ```
-Email: admin@booknest.com
+Email: admin@gmail.com
 Password: admin123
 ```
 
 **Important:** Change these credentials in production!
-
-## 📁 Project Structure
-
-```
-booknest/
-├── client/                 # React frontend
-│   ├── src/
-│   │   ├── components/     # Reusable UI components
-│   │   ├── pages/          # Page components
-│   │   ├── hooks/          # Custom React hooks
-│   │   ├── context/        # Context providers
-│   │   ├── graphql/        # GraphQL queries & mutations
-│   │   └── routes/         # Route configuration
-│   └── package.json
-├── server/                 # Node.js backend
-│   ├── graphql/            # GraphQL schema & resolvers
-│   ├── models/             # Sequelize models
-│   ├── services/           # Business logic
-│   ├── middleware/         # Custom middleware
-│   ├── config/             # Configuration files
-│   ├── server.js           # Entry point
-│   └── package.json
-└── README.md              # This file
-```
-
-## 🔐 Security Features
-
-- **JWT Authentication** - Secure token-based authentication
-- **Protected Routes** - Admin and user-only routes
-- **Password Hashing** - Bcrypt for secure password storage
-- **Input Validation** - Server-side validation of all inputs
-- **CORS** - Cross-origin resource sharing configured
-- **Environment Variables** - Sensitive data stored in env files
-
-## 🧪 Testing
-
-To run tests (when implemented):
-
-**Server:**
-```bash
-cd server
-npm test
-```
-
-**Client:**
-```bash
-cd client
-npm test
-```
-
-## 📦 Deployment
-
-### Deploy to Production
-
-1. **Build the client:**
-   ```bash
-   cd client
-   npm run build
-   ```
-
-2. **Set production environment variables** on your hosting platform
-
-3. **Deploy server** to your hosting service (Heroku, AWS, DigitalOcean, etc.)
-
-4. **Deploy client** to a CDN or static hosting (Vercel, Netlify, etc.)
-
-Recommended platforms:
-- **Backend:** Heroku, AWS EC2, Railway
-- **Frontend:** Vercel, Netlify, GitHub Pages
-- **Database:** AWS RDS, Railway, Neon (PostgreSQL)
 
 ## 🤝 Contributing
 
@@ -269,36 +139,12 @@ Contributions are welcome! Here's how you can help:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙋 Support
-
-If you have any questions or need help:
-- Open an issue on GitHub
-- Check existing documentation
-- Review the project architecture
 
 ## 👥 Authors
 
-- **Your Name** - Initial work and development
-
-## 🎯 Roadmap
-
-- [ ] User reviews and ratings
-- [ ] Advanced book filtering and sorting
-- [ ] Payment gateway integration (Stripe)
-- [ ] Book recommendations engine
-- [ ] Email notifications
-- [ ] Mobile app (React Native)
-- [ ] Multi-language support
-- [ ] Real-time chat support
-
-## 📞 Contact
-
-For more information, visit: [GitHub Repository](https://github.com/antrikshaot99/SharedShelf)
-
----
+- **Tamanna Chopra** 
+- **Ananya Tuli** 
+- **Antriksh Garg** 
+- **Tanisha** 
 
 Happy reading! 📖🎉

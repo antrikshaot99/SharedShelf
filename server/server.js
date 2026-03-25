@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const { ApolloServer } = require("@apollo/server");
 const { expressMiddleware } = require("@as-integrations/express5");
 
+require("dotenv").config();
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
 require("./config/db");
@@ -11,7 +12,7 @@ require("./config/db");
 // Initialize Sequelize models
 const { sequelize } = require("./models");
 
-const JWT_SECRET = 'booknest_secret_key_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'booknest_secret_key_2026';
 
 async function startServer() {
   const app = express();
