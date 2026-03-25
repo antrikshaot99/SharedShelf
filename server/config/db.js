@@ -4,7 +4,7 @@ const mysql = require("mysql2");
 const config = {
   host: "localhost",
   user: "root",
-  password: "Ananya@26",
+  password: "tamanna1234",
   database: "booknest",
 };
 
@@ -16,7 +16,7 @@ db.connect(err => {
     console.error("DB Connection Failed:", err);
     return;
   }
-  console.log("MySQL Connected ✅");
+  console.log("MySQL Connected");
 });
 
 // Export both connection and config

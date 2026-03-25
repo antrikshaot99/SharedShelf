@@ -1,4 +1,4 @@
 module.exports = {
-  email: "admin@booknest.com",
+  email: "admin@gmail.com",
   password: "admin123"
 };

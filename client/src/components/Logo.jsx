@@ -1,4 +1,11 @@
+import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+
 export default function Logo({ size = "md", variant = "default" }) {
+  const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
+  
   const sizes = {
     sm: { container: 32, icon: 18, text: 16 },
     md: { container: 40, icon: 22, text: 18 },
@@ -8,9 +15,18 @@ export default function Logo({ size = "md", variant = "default" }) {
 
   const s = sizes[size];
   const showText = variant === "full";
+  
+  // Navigate to dashboard if logged in, otherwise to landing page
+  const handleClick = () => {
+    if (authContext?.isLoggedIn) {
+      navigate('/dashboard');
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
-    <div style={{ 
+    <div onClick={handleClick} style={{ 
       display: "flex", 
       alignItems: "center", 
       gap: size === "sm" ? 8 : size === "md" ? 10 : 14 
@@ -91,7 +107,7 @@ export default function Logo({ size = "md", variant = "default" }) {
           color: "var(--ink-900)",
           letterSpacing: "-0.02em",
         }}>
-          BookNest
+          Shared Self
         </span>
       )}
     </div>

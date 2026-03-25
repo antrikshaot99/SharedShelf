@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client/react";
-import { GET_STATS, GET_BOOKS, GET_USERS } from "../graphql/queries";
+import { GET_STATS, GET_BOOKS, GET_USERS, GET_ALL_ORDERS, GET_ALL_RENTALS } from "../graphql/queries";
 import { DELETE_BOOK, UPDATE_BOOK, UPDATE_USER_ROLE, DELETE_USER } from "../graphql/mutations";
 import Logo from "../components/Logo";
 
@@ -24,7 +24,6 @@ const TABS = [
   { key: "Books", icon: "📚", label: "Books" },
   { key: "Users", icon: "👥", label: "Users" },
   { key: "Orders", icon: "📦", label: "Orders" },
-  { key: "Settings", icon: "⚙️", label: "Settings" },
 ];
 
 /* ─── Shared Styles ─── */
@@ -90,15 +89,27 @@ const ProgressBar = ({ value, max, color }) => (
    ════════════════════════════════════════════════ */
 function OverviewTab() {
   const { data, loading } = useQuery(GET_STATS);
-  const { data: booksData } = useQuery(GET_BOOKS);
-  const { data: usersData } = useQuery(GET_USERS);
+  const { data: booksData } = useQuery(GET_BOOKS, {
+    fetchPolicy: "network-only",
+    pollInterval: 5000,
+  });
+  const { data: usersData } = useQuery(GET_USERS, { fetchPolicy: "network-only" });
+  const { data: ordersData } = useQuery(GET_ALL_ORDERS, {
+    fetchPolicy: "network-only",
+    pollInterval: 5000,
+  });
+  const { data: rentalsData } = useQuery(GET_ALL_RENTALS, {
+    fetchPolicy: "network-only",
+    pollInterval: 5000,
+  });
 
   const stats = data?.stats || {};
   const allBooks = booksData?.books || [];
   const allUsers = usersData?.users || [];
   const recentBooks = allBooks.slice(-5).reverse();
   const recentUsers = allUsers.slice(-5).reverse();
-  const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+  const orders = ordersData?.allOrders || [];
+  const rentals = rentalsData?.allRentals || [];
 
   // Genre breakdown
   const genreMap = {};
@@ -121,6 +132,16 @@ function OverviewTab() {
     return sum + items.reduce((s, i) => s + (i.price || 0) * (i.quantity || 1), 0);
   }, 0);
 
+  const soldBooksCount = orders.reduce((sum, order) => {
+    if (order?.orderType !== "purchase") return sum;
+    const items = Array.isArray(order?.items) ? order.items : [];
+    return sum + items.reduce((itemSum, item) => itemSum + (item?.quantity || 1), 0);
+  }, 0);
+
+  const rentedBooksCount = rentals.reduce((sum, rental) => {
+    return sum + (rental?.status === "active" ? 1 : 0);
+  }, 0);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {/* Welcome Banner */}
@@ -132,7 +153,7 @@ function OverviewTab() {
         <div style={{ position: "absolute", right: -20, top: -20, fontSize: 120, opacity: 0.1 }}>📚</div>
         <div style={{ position: "relative", zIndex: 1 }}>
           <div style={{ fontSize: 13, fontWeight: 600, opacity: 0.85, marginBottom: 6 }}>Welcome back, Admin</div>
-          <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>BookNest Dashboard</div>
+          <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>Shared Self Dashboard</div>
           <div style={{ fontSize: 14, opacity: 0.8 }}>
             {allBooks.length} books listed &bull; {allUsers.length} users registered &bull; ₹{totalRevenue.toFixed(0)} revenue
           </div>
@@ -188,8 +209,8 @@ function OverviewTab() {
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
               { label: "Available Books", value: allBooks.filter(b => !b.status || b.status === "available").length, icon: "✅", color: C.green },
-              { label: "Rented Books", value: allBooks.filter(b => b.status === "rented").length, icon: "🔄", color: C.orange },
-              { label: "Sold Books", value: allBooks.filter(b => b.status === "sold").length, icon: "💰", color: C.red },
+              { label: "Rented Books", value: rentedBooksCount, icon: "🔄", color: C.orange },
+              { label: "Sold Books", value: soldBooksCount, icon: "💰", color: C.red },
               { label: "Admin Users", value: allUsers.filter(u => u.role === "admin").length, icon: "👑", color: C.purple },
               { label: "Est. Revenue", value: `₹${totalRevenue.toFixed(0)}`, icon: "💵", color: C.green },
             ].map((s) => (
@@ -444,7 +465,10 @@ function BooksTab() {
    USERS TAB
    ════════════════════════════════════════════════ */
 function UsersTab() {
-  const { data, loading, refetch } = useQuery(GET_USERS);
+  const { data, loading, refetch } = useQuery(GET_USERS, {
+    fetchPolicy: "network-only",
+    pollInterval: 5000,
+  });
   const [updateRole] = useMutation(UPDATE_USER_ROLE);
   const [deleteUser] = useMutation(DELETE_USER);
   const [search, setSearch] = useState("");
@@ -537,7 +561,11 @@ function UsersTab() {
    ORDERS TAB
    ════════════════════════════════════════════════ */
 function OrdersTab() {
-  const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+  const { data, loading } = useQuery(GET_ALL_ORDERS, {
+    fetchPolicy: "network-only",
+    pollInterval: 5000,
+  });
+  const orders = data?.allOrders || [];
 
   const totalRevenue = orders.reduce((sum, o) => {
     const items = Array.isArray(o.items || o) ? (o.items || o) : [o.items || o];
@@ -547,6 +575,8 @@ function OrdersTab() {
     const items = Array.isArray(o.items || o) ? (o.items || o) : [o.items || o];
     return sum + items.reduce((s, i) => s + (i.quantity || 1), 0);
   }, 0);
+
+  if (loading) return <Loader />;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -601,8 +631,8 @@ function OrdersTab() {
                         <td style={{ padding: "14px 18px" }}>
                           {items.map((it, j) => (
                             <div key={j} style={{ fontSize: 13, marginBottom: j < items.length - 1 ? 4 : 0 }}>
-                              <span style={{ fontWeight: 700, color: C.dark2 }}>{it.title}</span>
-                              <span style={{ color: C.muted }}> — {it.author}</span>
+                              <span style={{ fontWeight: 700, color: C.dark2 }}>{it.title || it.book?.title || "Untitled"}</span>
+                              <span style={{ color: C.muted }}> — {it.author || it.book?.author || "Unknown"}</span>
                             </div>
                           ))}
                         </td>
@@ -625,7 +655,7 @@ function OrdersTab() {
    SETTINGS TAB
    ════════════════════════════════════════════════ */
 function SettingsTab() {
-  const [siteName, setSiteName] = useState("BookNest");
+  const [siteName, setSiteName] = useState("Shared Self");
   const [saved, setSaved] = useState(false);
 
   const save = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
@@ -645,7 +675,7 @@ function SettingsTab() {
           </div>
           <div>
             <label style={{ fontSize: 11, fontWeight: 800, color: C.muted, textTransform: "uppercase", letterSpacing: 0.5, display: "block", marginBottom: 8 }}>Admin Email</label>
-            <input value="admin@booknest.com" readOnly style={{ ...inputBase, width: "100%", background: C.cream, color: C.muted }} />
+            <input value="admin@gmail.com" readOnly style={{ ...inputBase, width: "100%", background: C.cream, color: C.muted }} />
           </div>
           <button onClick={save} style={{
             padding: "11px 24px", borderRadius: 10, border: "none", cursor: "pointer",
@@ -666,7 +696,7 @@ function SettingsTab() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           {[
-            ["Platform", "BookNest v1.0", "🏠"],
+            ["Platform", "Shared Self v1.0", "🏠"],
             ["Backend", "GraphQL + MySQL", "⚡"],
             ["Frontend", "React + Vite", "💜"],
             ["Auth", "Local credentials", "🔐"],
@@ -728,7 +758,7 @@ export default function AdminDashboard() {
 
   const tabContent = {
     Overview: <OverviewTab />, Books: <BooksTab />, Users: <UsersTab />,
-    Orders: <OrdersTab />, Settings: <SettingsTab />,
+    Orders: <OrdersTab />,
   };
 
   const tabDesc = {
@@ -736,7 +766,6 @@ export default function AdminDashboard() {
     Books: "Manage all books in the marketplace",
     Users: "Manage registered users and roles",
     Orders: "View all placed orders and revenue",
-    Settings: "Configure platform settings",
   };
 
   return (
@@ -795,7 +824,7 @@ export default function AdminDashboard() {
             }}>A</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: C.dark2 }}>Admin</div>
-              <div style={{ fontSize: 10, color: C.muted }}>admin@booknest</div>
+              <div style={{ fontSize: 10, color: C.muted }}>admin@gmail.com</div>
             </div>
           </div>
           <button onClick={handleLogout} style={{

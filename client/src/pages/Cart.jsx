@@ -6,7 +6,7 @@ import Logo from "../components/Logo";
 
 export default function Cart() {
   const { cart, addToCart, removeFromCart, clearCart } = useContext(CartContext);
-  const { placeOrder } = useContext(OrderContext);
+  const { placeOrder, isPlacingOrder } = useContext(OrderContext);
   const navigate = useNavigate();
 
   const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
@@ -248,7 +248,7 @@ export default function Cart() {
                         {item.quantity}
                       </span>
                       <button
-                        onClick={() => addToCart(item)}
+                        onClick={() => addToCart(item.book || item, item.mode)}
                         style={{
                           width: 36,
                           height: 36,
@@ -346,10 +346,15 @@ export default function Cart() {
               </div>
 
               <button
-                onClick={() => {
-                  placeOrder(cart);
-                  clearCart();
-                  navigate("/orders");
+                onClick={async () => {
+                  try {
+                    await placeOrder();
+                    clearCart();
+                    navigate("/orders");
+                  } catch (error) {
+                    console.error("Error placing order:", error);
+                    alert("Failed to place order: " + error.message);
+                  }
                 }}
                 style={{
                   width: "100%",
@@ -365,7 +370,7 @@ export default function Cart() {
                   marginBottom: 12,
                 }}
               >
-                Checkout Now
+                {isPlacingOrder ? "Placing Order..." : "Checkout Now"}
               </button>
 
               <button

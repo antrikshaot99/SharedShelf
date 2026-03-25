@@ -36,11 +36,11 @@ Order.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
 Order.hasMany(OrderItem, { foreignKey: 'order_id', as: 'items' });
 OrderItem.belongsTo(Order, { foreignKey: 'order_id' });
-OrderItem.belongsTo(Book, { foreignKey: 'book_id' });
+OrderItem.belongsTo(Book, { foreignKey: 'book_id', as: 'book' });
 
 User.hasMany(CartItem, { foreignKey: 'user_id', as: 'cart' });
 CartItem.belongsTo(User, { foreignKey: 'user_id' });
-CartItem.belongsTo(Book, { foreignKey: 'book_id' });
+CartItem.belongsTo(Book, { foreignKey: 'book_id', as: 'book' });
 
 User.hasMany(Rental, { foreignKey: 'user_id', as: 'rentals' });
 Rental.belongsTo(User, { foreignKey: 'user_id', as: 'user' });

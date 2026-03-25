@@ -1,23 +1,42 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import { useQuery, useMutation } from "@apollo/client/react";
+import { AuthContext } from "./AuthContext";
 import { GET_MY_CART } from "../graphql/queries";
 import { ADD_TO_CART, UPDATE_CART_ITEM, REMOVE_FROM_CART, CLEAR_CART } from "../graphql/mutations";
 
 export const CartContext = createContext();
 
+function normalizeCartItem(item) {
+  const book = item.book || item.Book || {};
+  const unitPrice = item.mode === 'rent'
+    ? (book.rent_price ?? item.rent_price ?? 0)
+    : (book.price ?? item.price ?? 0);
+
+  return {
+    ...item,
+    title: item.title ?? book.title ?? "",
+    author: item.author ?? book.author ?? "",
+    coverImage: item.coverImage ?? book.coverImage ?? "",
+    price: unitPrice,
+    rent_price: book.rent_price ?? item.rent_price ?? 0,
+    book,
+  };
+}
+
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
   const [mode, setMode] = useState("buy"); // 'buy' or 'rent'
   
-  // Check if user is logged in
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  // Get reactive auth state from AuthContext
+  const { isLoggedIn } = useContext(AuthContext);
   
   // Fetch cart from backend if logged in
+  // This will re-run when isLoggedIn changes (reactive!)
   const { data, refetch } = useQuery(GET_MY_CART, {
     skip: !isLoggedIn,
     onCompleted: (data) => {
       if (data?.myCart) {
-        setCart(data.myCart);
+        setCart(data.myCart.map(normalizeCartItem));
       }
     }
   });
@@ -30,7 +49,7 @@ export function CartProvider({ children }) {
   /* =========================
      ADD TO CART
   ========================= */
-  const addToCart = async (book) => {
+  const addToCart = async (book, selectedMode = mode) => {
     if (!isLoggedIn) {
       alert("Please login to add items to cart");
       return;
@@ -40,10 +59,13 @@ export function CartProvider({ children }) {
       await addToCartMutation({
         variables: {
           bookId: book.id,
-          mode: mode
+          mode: selectedMode
         }
       });
-      await refetch();
+      const updatedCart = await refetch();
+      if (updatedCart?.data?.myCart) {
+        setCart(updatedCart.data.myCart.map(normalizeCartItem));
+      }
     } catch (err) {
       console.error("Error adding to cart:", err);
       alert("Failed to add to cart: " + err.message);
@@ -69,7 +91,10 @@ export function CartProvider({ children }) {
           }
         });
       }
-      await refetch();
+      const updatedCart = await refetch();
+      if (updatedCart?.data?.myCart) {
+        setCart(updatedCart.data.myCart.map(normalizeCartItem));
+      }
     } catch (err) {
       console.error("Error updating cart:", err);
     }
@@ -97,7 +122,10 @@ export function CartProvider({ children }) {
       await removeFromCartMutation({
         variables: { id: cartItemId }
       });
-      await refetch();
+      const updatedCart = await refetch();
+      if (updatedCart?.data?.myCart) {
+        setCart(updatedCart.data.myCart.map(normalizeCartItem));
+      }
     } catch (err) {
       console.error("Error removing from cart:", err);
     }
@@ -122,7 +150,7 @@ export function CartProvider({ children }) {
   ========================= */
   const calculateTotal = () => {
     return cart.reduce((sum, item) => {
-      const price = item.mode === 'rent' ? item.book.rent_price : item.book.price;
+      const price = item.mode === 'rent' ? item.rent_price : item.price;
       return sum + (price * item.quantity);
     }, 0);
   };

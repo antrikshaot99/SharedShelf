@@ -1,4 +1,6 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "./context/AuthContext";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import Cart from "./pages/Cart";
@@ -8,9 +10,12 @@ import Register from "./pages/Register";
 import UserDashboard from "./pages/UserDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import SellBook from "./pages/SellBook";
+import Rentals from "./pages/Rentals";
 import Logo from "./components/Logo";
 
 function Landing() {
+  const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
   return (
     <div style={{
       minHeight: "100vh",
@@ -29,35 +34,74 @@ function Landing() {
       }}>
         <Logo size="md" variant="full" />
         <div style={{ display: "flex", gap: 12 }}>
-          <Link to="/login">
-            <button style={{
-              padding: "10px 24px",
-              fontSize: 14,
-              fontWeight: 600,
-              background: "transparent",
-              color: "var(--ink-700)",
-              border: "1.5px solid var(--ink-200)",
-              borderRadius: 10,
-              cursor: "pointer",
-            }}>
-              Sign In
-            </button>
-          </Link>
-          <Link to="/register">
-            <button style={{
-              padding: "10px 24px",
-              fontSize: 14,
-              fontWeight: 600,
-              background: "var(--gradient-primary)",
-              color: "white",
-              border: "none",
-              borderRadius: 10,
-              cursor: "pointer",
-              boxShadow: "var(--shadow-primary)",
-            }}>
-              Get Started
-            </button>
-          </Link>
+          {authContext?.isLoggedIn ? (
+            <>
+              <Link to="/dashboard">
+                <button style={{
+                  padding: "10px 24px",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  background: "transparent",
+                  color: "var(--ink-700)",
+                  border: "1.5px solid var(--ink-200)",
+                  borderRadius: 10,
+                  cursor: "pointer",
+                }}>
+                  Dashboard
+                </button>
+              </Link>
+              <button 
+                onClick={() => {
+                  authContext?.logout?.();
+                  navigate('/');
+                }}
+                style={{
+                  padding: "10px 24px",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  background: "var(--gradient-primary)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  boxShadow: "var(--shadow-primary)",
+                }}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <button style={{
+                  padding: "10px 24px",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  background: "transparent",
+                  color: "var(--ink-700)",
+                  border: "1.5px solid var(--ink-200)",
+                  borderRadius: 10,
+                  cursor: "pointer",
+                }}>
+                  Sign In
+                </button>
+              </Link>
+              <Link to="/register">
+                <button style={{
+                  padding: "10px 24px",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  background: "var(--gradient-primary)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  boxShadow: "var(--shadow-primary)",
+                }}>
+                Get Started
+              </button>
+            </Link>
+            </>
+          )}
         </div>
       </nav>
 
@@ -316,13 +360,28 @@ function App() {
     </ProtectedRoute>
   }
 />
-<Route path="/orders" element={<Orders />} />
-<Route path="/sell" element={<SellBook />} />
+<Route path="/orders" element={
+  <ProtectedRoute>
+    <Orders />
+  </ProtectedRoute>
+} />
+<Route path="/sell" element={
+  <ProtectedRoute>
+    <SellBook />
+  </ProtectedRoute>
+} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        <Route path="/dashboard" element={<UserDashboard />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute><UserDashboard /></ProtectedRoute>
+        } />
+        <Route path="/admin" element={
+          <ProtectedRoute><AdminDashboard /></ProtectedRoute>
+        } />
+        <Route path="/rentals" element={
+          <ProtectedRoute><Rentals /></ProtectedRoute>
+        } />
       </Routes>
     </BrowserRouter>
   );

@@ -4,7 +4,7 @@ export default function Landing() {
   return (
     <div style={styles.container}>
       
-      <h1 style={styles.title}>📚 BookNest</h1>
+      <h1 style={styles.title}>📚 Shared Self</h1>
 
       <p style={styles.subtitle}>
         Buy • Rent • Sell your favorite books in one cozy place

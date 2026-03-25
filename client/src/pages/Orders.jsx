@@ -9,7 +9,7 @@ export default function Orders() {
 
   const totalOrders = orders.length;
   const totalSpent = orders.reduce((sum, order) => 
-    sum + order.items.reduce((s, item) => s + item.price, 0), 0
+    sum + order.items.reduce((s, item) => s + item.price * item.quantity, 0), 0
   );
 
   return (
@@ -209,7 +209,7 @@ export default function Orders() {
                         marginBottom: 2,
                       }}>Date</div>
                       <div style={{ fontSize: 14, color: "var(--ink-700)", fontWeight: 600 }}>
-                        {order.date}
+                        {order.date || "Just now"}
                       </div>
                     </div>
                     <span style={{
@@ -284,7 +284,7 @@ export default function Orders() {
                   <div>
                     <span style={{ fontSize: 14, color: "var(--ink-500)", marginRight: 8 }}>Total:</span>
                     <span style={{ fontSize: 18, fontWeight: 800, color: "var(--ink-900)" }}>
-                      ₹{order.items.reduce((s, item) => s + item.price, 0)}
+                      ₹{order.items.reduce((s, item) => s + item.price * item.quantity, 0)}
                     </span>
                   </div>
                 </div>

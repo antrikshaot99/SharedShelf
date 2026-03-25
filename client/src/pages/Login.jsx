@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@apollo/client/react";
 import { LOGIN } from "../graphql/mutations";
+import { AuthContext } from "../context/AuthContext";
 import Logo from "../components/Logo";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { updateAuthState } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     email: "",
@@ -19,14 +21,9 @@ export default function Login() {
       const { data } = await loginMutation({
         variables: { email: form.email, password: form.password },
       });
-      
-      // Save JWT token and user info
-      localStorage.setItem("token", data.login.token);
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userId", data.login.user.id);
-      localStorage.setItem("userName", data.login.user.name);
-      localStorage.setItem("userRole", data.login.user.role);
-      
+
+      updateAuthState(data.login.token, data.login.user);
+
       navigate(data.login.user.role === "admin" ? "/admin" : "/dashboard");
     } catch (err) {
       alert("Login failed: " + err.message);
@@ -93,7 +90,7 @@ export default function Login() {
             fontWeight: 800,
             color: "white",
             marginBottom: 16,
-          }}>Welcome to BookNest</h1>
+          }}>Welcome to Shared Self</h1>
           <p style={{
             fontSize: 16,
             color: "rgba(255,255,255,0.85)",

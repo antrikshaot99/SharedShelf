@@ -2,6 +2,7 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
+import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 
@@ -202,7 +203,7 @@ const HeroBanner = () => (
         fontSize: 28,
         fontWeight: 700,
         marginBottom: 8,
-      }}>Welcome to BookNest</h1>
+      }}>Welcome to Shared Self</h1>
       <p style={{
         fontSize: 15,
         opacity: 0.9,
@@ -420,21 +421,32 @@ const BookCard = ({ book, mode, onAddToCart, isOwner }) => {
 ========================= */
 export default function UserDashboard() {
   const { loading, error, data } = useQuery(GET_BOOKS);
-  const { addToCart } = useContext(CartContext);
+  const { addToCart, mode, setMode } = useContext(CartContext);
   const navigate = useNavigate();
   const [selectedGenre, setSelectedGenre] = useState("All");
-  const [mode, setMode] = useState("buy");
   const [activeTab, setActiveTab] = useState("Home");
   const currentUserId = localStorage.getItem("userId");
   const userName = localStorage.getItem("userName");
 
+  const authContext = useContext(AuthContext);
+  
   const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("token");
+    // Call AuthContext logout method
+    authContext?.logout?.();
     navigate("/login");
   };
 
-  const genres = ["All", "Fiction", "Non-fiction", "Sci-Fi", "Romance", "Mystery", "Fantasy", "Biography"];
+  const genres = [
+    "All",
+    "Your Listings",
+    "Fiction",
+    "Non-fiction",
+    "Sci-Fi",
+    "Romance",
+    "Mystery",
+    "Fantasy",
+    "Biography",
+  ];
 
   if (loading) {
     return (
@@ -480,7 +492,11 @@ export default function UserDashboard() {
 
   const filteredBooks = selectedGenre === "All"
     ? data.books
-    : data.books.filter((b) => b.genre === selectedGenre);
+    : selectedGenre === "Your Listings"
+      ? data.books.filter((b) => String(b.owner_id) === String(currentUserId))
+      : data.books.filter((b) => b.genre === selectedGenre);
+
+  const sectionTitle = selectedGenre === "All" ? "All Books" : selectedGenre;
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "var(--ink-100)" }}>
@@ -515,7 +531,7 @@ export default function UserDashboard() {
                 fontWeight: 700,
                 color: "var(--ink-900)",
               }}>
-                {selectedGenre === "All" ? "All Books" : selectedGenre}
+                {sectionTitle}
               </h2>
               <span style={{
                 fontSize: 14,

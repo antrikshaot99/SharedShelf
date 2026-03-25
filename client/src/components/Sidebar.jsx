@@ -1,25 +1,40 @@
+import { useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { CartContext } from "../context/CartContext";
 
-const navItems = [
+const staticNavItems = [
   { icon: "🏠", label: "Home", path: "/dashboard" },
-  { icon: "📚", label: "Browse Books", path: "/dashboard", badge: null },
+  { icon: "📚", label: "Browse Books", path: "/dashboard" },
   { icon: "📁", label: "My Orders", path: "/orders" },
-  { icon: "🛒", label: "Cart", path: "/cart" },
+  { icon: "🛒", label: "Cart", path: "/cart", isCart: true },
 ];
 
 const secondaryItems = [
   { icon: "💰", label: "Sell a Book", path: "/sell" },
-  { icon: "📖", label: "My Rentals", path: "/orders" },
+  { icon: "📖", label: "My Rentals", path: "/rentals" },
 ];
 
-const bottomItems = [
-  { icon: "⚙️", label: "Settings", path: "#" },
-  { icon: "📚", label: "Resources", path: "#" },
-];
+const bottomItems = [];
 
 export default function Sidebar({ userName, onLogout }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { cart } = useContext(CartContext);
+  const token = localStorage.getItem("token");
+
+  let userEmail = "";
+  try {
+    const payload = token ? JSON.parse(atob(token.split(".")[1])) : null;
+    userEmail = payload?.email || "";
+  } catch {
+    userEmail = "";
+  }
+
+  const cartCount = cart?.reduce((sum, item) => sum + (item.quantity || 1), 0) || 0;
+
+  const navItems = staticNavItems.map((item) =>
+    item.isCart ? { ...item, badge: cartCount > 0 ? cartCount : null } : item
+  );
 
   const NavItem = ({ icon, label, path, badge, isActive }) => (
     <button
@@ -58,12 +73,18 @@ export default function Sidebar({ userName, onLogout }) {
       <span style={{ flex: 1 }}>{label}</span>
       {badge && (
         <span style={{
-          background: "var(--primary)",
+          background: "#ef4444",
           color: "white",
           fontSize: 11,
           fontWeight: 700,
-          padding: "2px 8px",
+          minWidth: 20,
+          height: 20,
+          padding: "0 6px",
           borderRadius: 10,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          lineHeight: 1,
         }}>{badge}</span>
       )}
     </button>
@@ -105,28 +126,12 @@ export default function Sidebar({ userName, onLogout }) {
           </svg>
         </div>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "var(--ink-900)" }}>BookNest</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "var(--ink-900)" }}>Shared Self</div>
           <div style={{ fontSize: 11, color: "var(--ink-500)" }}>Book Marketplace</div>
         </div>
       </div>
 
       {/* Search */}
-      <div style={{ padding: "16px 16px 8px" }}>
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          padding: "10px 14px",
-          background: "var(--ink-100)",
-          borderRadius: 10,
-          color: "var(--ink-500)",
-          fontSize: 14,
-        }}>
-          <span>🔍</span>
-          <span>Search...</span>
-        </div>
-      </div>
-
       {/* Main Navigation */}
       <div style={{ padding: "8px 12px", flex: 1, overflow: "auto" }}>
         {navItems.map((item) => (
@@ -156,26 +161,6 @@ export default function Sidebar({ userName, onLogout }) {
             isActive={location.pathname === item.path}
           />
         ))}
-
-        {/* Section Divider */}
-        <div style={{
-          fontSize: 11,
-          fontWeight: 600,
-          textTransform: "uppercase",
-          letterSpacing: 0.5,
-          color: "var(--ink-500)",
-          padding: "20px 16px 10px",
-        }}>
-          More
-        </div>
-
-        {bottomItems.map((item) => (
-          <NavItem 
-            key={item.label} 
-            {...item}
-            isActive={false}
-          />
-        ))}
       </div>
 
       {/* User Section */}
@@ -183,58 +168,78 @@ export default function Sidebar({ userName, onLogout }) {
         padding: 16,
         borderTop: "1px solid var(--ink-100)",
         display: "flex",
-        alignItems: "center",
-        gap: 12,
+        flexDirection: "column",
+        gap: 10,
       }}>
         <div style={{
-          width: 40,
-          height: 40,
-          borderRadius: "50%",
-          background: "var(--gradient-primary)",
+          width: "100%",
+          background: "var(--ink-100)",
+          borderRadius: 16,
+          padding: "14px 12px",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          color: "white",
-          fontWeight: 700,
-          fontSize: 14,
+          gap: 10,
         }}>
-          {userName?.charAt(0)?.toUpperCase() || "U"}
-        </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--ink-900)" }}>
-            {userName || "User"}
-          </div>
           <div style={{
-            display: "inline-flex",
-            alignItems: "center",
-            padding: "2px 8px",
+            width: 44,
+            height: 44,
+            borderRadius: 12,
             background: "var(--primary)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             color: "white",
-            fontSize: 10,
-            fontWeight: 700,
-            borderRadius: 10,
-            marginTop: 2,
+            fontWeight: 800,
+            fontSize: 22,
+            lineHeight: 1,
+            flexShrink: 0,
           }}>
-            Pro
+            {userName?.charAt(0)?.toUpperCase() || "U"}
+          </div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "var(--ink-900)", lineHeight: 1.1 }}>
+              {userName || "User"}
+            </div>
+            <div style={{
+              marginTop: 3,
+              fontSize: 11,
+              fontWeight: 500,
+              color: "var(--ink-500)",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}>
+              {userEmail || "user@booknest.com"}
+            </div>
           </div>
         </div>
         <button
           onClick={onLogout}
           style={{
-            width: 32,
-            height: 32,
-            borderRadius: 8,
-            border: "1px solid var(--ink-200)",
+            width: "100%",
+            padding: "11px 14px",
+            borderRadius: 13,
+            border: "2px solid var(--ink-200)",
             background: "white",
+            color: "var(--ink-500)",
+            fontSize: 12,
+            fontWeight: 700,
             cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 14,
+            transition: "all 0.15s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "var(--ink-100)";
+            e.currentTarget.style.color = "var(--ink-700)";
+            e.currentTarget.style.borderColor = "var(--ink-300)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "white";
+            e.currentTarget.style.color = "var(--ink-500)";
+            e.currentTarget.style.borderColor = "var(--ink-200)";
           }}
           title="Logout"
         >
-          ↗
+          Logout
         </button>
       </div>
     </div>

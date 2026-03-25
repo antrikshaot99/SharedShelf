@@ -4,8 +4,8 @@ const jwt = require("jsonwebtoken");
 const { ApolloServer } = require("@apollo/server");
 const { expressMiddleware } = require("@as-integrations/express5");
 
-const typeDefs = require("./schema/typeDefs");
-const resolvers = require("./schema/resolvers");
+const typeDefs = require("./graphql/typeDefs");
+const resolvers = require("./graphql/resolvers");
 require("./config/db");
 
 // Initialize Sequelize models
@@ -56,7 +56,7 @@ async function startServer() {
 
   app.listen(5000, () => {
     console.log("🚀 Server running on http://localhost:5000/graphql");
-    console.log("📚 BookNest GraphQL API ready");
+    console.log("📚 Shared Self GraphQL API ready");
   });
 }
 

@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
     orderType: {
       type: DataTypes.ENUM('purchase', 'rental'),
       defaultValue: 'purchase'
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'created_at'
     }
   }, {
     tableName: 'orders',

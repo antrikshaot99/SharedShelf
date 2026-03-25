@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useMutation } from "@apollo/client/react";
 import { REGISTER } from "../graphql/mutations";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import Logo from "../components/Logo";
 
 export default function Register() {
   const navigate = useNavigate();
+  const { updateAuthState } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     name: "",
@@ -20,15 +22,9 @@ export default function Register() {
 
     try {
       const { data } = await register({ variables: form });
-      
-      // Save JWT token and user info
-      localStorage.setItem("token", data.register.token);
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userId", data.register.user.id);
-      localStorage.setItem("userName", data.register.user.name);
-      localStorage.setItem("userRole", data.register.user.role);
-      
-      alert("Registration successful! Welcome to BookNest!");
+
+      updateAuthState(data.register.token, data.register.user);
+
       navigate("/dashboard");
     } catch (err) {
       alert("Registration failed: " + err.message);
@@ -294,7 +290,7 @@ export default function Register() {
             fontWeight: 800,
             color: "white",
             marginBottom: 16,
-          }}>Join BookNest Today</h1>
+          }}>Join Shared Self Today</h1>
           <p style={{
             fontSize: 16,
             color: "rgba(255,255,255,0.85)",

@@ -70,7 +70,7 @@ const resolvers = {
       const user = requireAuth(context);
       return await CartItem.findAll({
         where: { user_id: user.id },
-        include: [{ model: Book, as: 'Book' }]
+        include: [{ model: Book, as: 'book' }]
       });
     },
 
@@ -283,7 +283,10 @@ const resolvers = {
       if (existing) {
         existing.quantity += 1;
         await existing.save();
-        return existing;
+        // Return with Book included to satisfy GraphQL schema
+        return await CartItem.findByPk(existing.id, {
+          include: [{ model: Book, as: 'book' }]
+        });
       }
       
       const cartItem = await CartItem.create({
@@ -294,7 +297,7 @@ const resolvers = {
       });
       
       return await CartItem.findByPk(cartItem.id, {
-        include: [{ model: Book }]
+        include: [{ model: Book, as: 'book' }]
       });
     },
 
@@ -316,7 +319,7 @@ const resolvers = {
       await cartItem.save();
       
       return await CartItem.findByPk(cartItem.id, {
-        include: [{ model: Book }]
+        include: [{ model: Book, as: 'book' }]
       });
     },
 
@@ -345,7 +348,7 @@ const resolvers = {
       
       const cartItems = await CartItem.findAll({
         where: { user_id: user.id },
-        include: [{ model: Book }]
+        include: [{ model: Book, as: 'book' }]
       });
       
       if (cartItems.length === 0) {

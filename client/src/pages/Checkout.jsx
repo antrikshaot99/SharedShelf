@@ -6,17 +6,22 @@ import Logo from "../components/Logo";
 
 export default function Checkout() {
   const { cart, clearCart } = useContext(CartContext);
-  const { placeOrder } = useContext(OrderContext);
+  const { placeOrder, isPlacingOrder } = useContext(OrderContext);
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState("card");
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const itemCount = cart.reduce((s, i) => s + i.quantity, 0);
 
-  const handleCheckout = () => {
-    placeOrder(cart);
-    clearCart();
-    navigate("/orders");
+  const handleCheckout = async () => {
+    try {
+      await placeOrder();
+      clearCart();
+      navigate("/orders");
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("Failed to place order: " + error.message);
+    }
   };
 
   if (cart.length === 0)
@@ -403,7 +408,7 @@ export default function Checkout() {
               fontSize: 16, cursor: "pointer", marginTop: 24,
               boxShadow: "var(--shadow-primary)",
             }}>
-              Complete Order
+              {isPlacingOrder ? "Placing Order..." : `Complete Order • ₹${total}`}
             </button>
 
             <div style={{
