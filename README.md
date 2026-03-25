@@ -1,5 +1,11 @@
 # 📚 SharedShelf
 
+<div align="center">
+  <img src="assets/logo.png" alt="SharedShelf Logo" width="400">
+  
+  **Buy, Sell & Rent Books**
+</div>
+
 A full-stack web application for buying, selling, and renting books. Built with modern technologies and designed for a seamless user experience.
 
 ## ✨ Features
