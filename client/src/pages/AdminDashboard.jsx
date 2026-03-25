@@ -857,12 +857,6 @@ export default function AdminDashboard() {
             }}>{activeTab}</h1>
             <p style={{ fontSize: 13, color: C.muted, margin: "4px 0 0" }}>{tabDesc[activeTab]}</p>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{
-              padding: "6px 14px", borderRadius: 20, background: C.purpleLight,
-              fontSize: 11, fontWeight: 700, color: C.purple,
-            }}>👑 Admin</span>
-          </div>
         </header>
 
         {/* Page Content */}
