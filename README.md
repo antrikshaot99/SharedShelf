@@ -1,7 +1,7 @@
 # 📚 SharedShelf
 
 <div align="center">
-  <img src="assets/logo.png" alt="SharedShelf Logo" width="400">
+  <img src="logo.png" alt="SharedShelf Logo" width="400">
   
   **Buy, Sell & Rent Books**
 </div>
