@@ -6,6 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "node setup.js",
     "setup-start": "node setup.js && npm start",
+    "seed": "node seed.js",
     "dev": "nodemon server.js",
     "start": "node server.js"
   },
