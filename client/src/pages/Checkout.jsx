@@ -10,7 +10,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState("card");
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = parseFloat((cart.reduce((s, item) => s + item.price * item.quantity, 0)).toFixed(2));
   const itemCount = cart.reduce((s, i) => s + i.quantity, 0);
 
   const handleCheckout = async () => {

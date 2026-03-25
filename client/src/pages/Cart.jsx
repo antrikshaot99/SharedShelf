@@ -9,7 +9,7 @@ export default function Cart() {
   const { placeOrder, isPlacingOrder } = useContext(OrderContext);
   const navigate = useNavigate();
 
-  const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const total = parseFloat((cart.reduce((s, i) => s + i.price * i.quantity, 0)).toFixed(2));
   const itemCount = cart.reduce((s, i) => s + i.quantity, 0);
 
   return (
