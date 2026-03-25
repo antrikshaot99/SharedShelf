@@ -209,7 +209,7 @@ export default function Sidebar({ userName, onLogout }) {
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}>
-              {userEmail || "user@booknest.com"}
+              {userEmail || "user@sharedshelf.com"}
             </div>
           </div>
         </div>

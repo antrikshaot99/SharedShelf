@@ -15,10 +15,10 @@ A full-stack web application for buying, selling, and renting books. Built with 
 
 ## 🏗️ Architecture
 
-BookNest follows a modern full-stack architecture:
+SharedShelf follows a modern full-stack architecture:
 
 ```
-BookNest
+SharedShelf
 ├── Client (React + Vite)
 │   ├── Pages (Landing, Login, Register, etc.)
 │   ├── Components (UI components, Forms)
@@ -61,7 +61,7 @@ Before you begin, ensure you have:
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/antrikshaot99/SharedShelf.git
-cd booknest
+cd sharedshelf
 ```
 
 ### 2. Setup Server
@@ -77,7 +77,7 @@ Create a `.env` file in the server directory with the following variables:
 DB_HOST=localhost
 DB_USER=postgres
 DB_PASSWORD=your_password
-DB_NAME=booknest
+DB_NAME=sharedshelf
 DB_PORT=5432
 JWT_SECRET=your_secret_key
 PORT=4000

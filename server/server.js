@@ -12,7 +12,7 @@ require("./config/db");
 // Initialize Sequelize models
 const { sequelize } = require("./models");
 
-const JWT_SECRET = process.env.JWT_SECRET || 'booknest_secret_key_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'sharedshelf_secret_key_2026';
 
 async function startServer() {
   const app = express();

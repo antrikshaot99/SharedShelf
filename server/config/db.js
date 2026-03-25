@@ -6,7 +6,7 @@ const config = {
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "root",
-  database: process.env.DB_NAME || "booknest",
+  database: process.env.DB_NAME || "sharedshelf",
 };
 
 // Legacy MySQL2 connection (kept for backward compatibility)
