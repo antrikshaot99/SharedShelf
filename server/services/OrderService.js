@@ -1,4 +1,4 @@
-const { Order, OrderItem, CartItem, Book, Rental, User } = require('../models');
+const { Order, OrderItem, CartItem, Book, Rental, User, sequelize } = require('../models');
 const CartService = require('./CartService');
 
 class OrderService {
@@ -59,79 +59,94 @@ class OrderService {
   }
 
   /**
-   * Place order from cart
+   * Place order from cart with database transaction
    */
   static async placeOrder(userId) {
-    // Get cart items
-    const cartItems = await CartItem.findAll({
-      where: { user_id: userId },
-      include: [{ model: Book, as: 'book' }]
-    });
-
-    if (cartItems.length === 0) {
-      throw new Error('Cart is empty');
-    }
-
-    // Calculate total and determine order type
-    let totalAmount = 0;
-    const orderType = cartItems[0].mode === 'rent' ? 'rental' : 'purchase';
-
-    cartItems.forEach(item => {
-      const price = item.mode === 'rent' ? item.book.rent_price : item.book.price;
-      totalAmount += price * item.quantity;
-    });
-
-    // Create order
-    const order = await Order.create({
-      user_id: userId,
-      totalAmount,
-      status: 'completed',
-      orderType
-    });
-
-    // Create order items and rentals
-    for (const item of cartItems) {
-      const price = item.mode === 'rent' ? item.book.rent_price : item.book.price;
-      await OrderItem.create({
-        order_id: order.id,
-        book_id: item.book_id,
-        quantity: item.quantity,
-        price
+    const transaction = await sequelize.transaction();
+    
+    try {
+      // Get cart items
+      const cartItems = await CartItem.findAll({
+        where: { user_id: userId },
+        include: [{ model: Book, as: 'book' }],
+        transaction
       });
 
-      // If rental, create rental record
-      if (item.mode === 'rent') {
-        const dueDate = new Date();
-        dueDate.setDate(dueDate.getDate() + 30); // 30-day rental period
-
-        await Rental.create({
-          user_id: userId,
-          book_id: item.book_id,
-          startDate: new Date(),
-          dueDate,
-          status: 'active',
-          rentalPrice: price
-        });
+      if (cartItems.length === 0) {
+        await transaction.rollback();
+        throw new Error('Cart is empty');
       }
 
-      // Keep inventory status aligned with completed orders for admin stats.
-      await Book.update(
-        { status: item.mode === 'rent' ? 'rented' : 'sold' },
-        { where: { id: item.book_id } }
-      );
+      // Calculate total and determine order type
+      let totalAmount = 0;
+      const orderType = cartItems[0].mode === 'rent' ? 'rental' : 'purchase';
+
+      cartItems.forEach(item => {
+        const price = item.mode === 'rent' ? item.book.rent_price : item.book.price;
+        totalAmount += price * item.quantity;
+      });
+
+      // Create order
+      const order = await Order.create({
+        user_id: userId,
+        totalAmount,
+        status: 'completed',
+        orderType
+      }, { transaction });
+
+      // Create order items and rentals
+      for (const item of cartItems) {
+        const price = item.mode === 'rent' ? item.book.rent_price : item.book.price;
+        await OrderItem.create({
+          order_id: order.id,
+          book_id: item.book_id,
+          quantity: item.quantity,
+          price
+        }, { transaction });
+
+        // If rental, create rental record
+        if (item.mode === 'rent') {
+          const dueDate = new Date();
+          dueDate.setDate(dueDate.getDate() + 30); // 30-day rental period
+
+          await Rental.create({
+            user_id: userId,
+            book_id: item.book_id,
+            startDate: new Date(),
+            dueDate,
+            status: 'active',
+            rentalPrice: price
+          }, { transaction });
+        }
+
+        // Keep inventory status aligned with completed orders for admin stats.
+        await Book.update(
+          { status: item.mode === 'rent' ? 'rented' : 'sold' },
+          { where: { id: item.book_id }, transaction }
+        );
+      }
+
+      // Clear cart
+      await CartService.clear(userId, transaction);
+
+      // Commit transaction
+      await transaction.commit();
+
+      // Return full order with items
+      return await Order.findByPk(order.id, {
+        include: [{
+          model: OrderItem,
+          as: 'items',
+          include: [{ model: Book, as: 'book' }]
+        }]
+      });
+    } catch (error) {
+      // Rollback transaction on error
+      if (transaction && !transaction.finished) {
+        await transaction.rollback();
+      }
+      throw error;
     }
-
-    // Clear cart
-    await CartService.clear(userId);
-
-    // Return full order with items
-    return await Order.findByPk(order.id, {
-      include: [{
-        model: OrderItem,
-        as: 'items',
-        include: [{ model: Book, as: 'book' }]
-      }]
-    });
   }
 
   /**
