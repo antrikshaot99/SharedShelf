@@ -7,23 +7,38 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        len: [1, 255]
+      }
     },
     author: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        len: [1, 255]
+      }
     },
     genre: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        len: [1, 100]
+      }
     },
     price: {
       type: DataTypes.DECIMAL(10, 2),
-      allowNull: true
+      allowNull: true,
+      validate: {
+        min: 0
+      }
     },
     rent_price: {
       type: DataTypes.DECIMAL(10, 2),
-      allowNull: true
+      allowNull: true,
+      validate: {
+        min: 0
+      }
     },
     status: {
       type: DataTypes.ENUM('available', 'rented', 'sold'),
@@ -47,7 +62,33 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     tableName: 'books',
-    timestamps: false
+    timestamps: false,
+    indexes: [
+      {
+        fields: ['status'],
+        name: 'idx_book_status'
+      },
+      {
+        fields: ['genre'],
+        name: 'idx_book_genre'
+      },
+      {
+        fields: ['author'],
+        name: 'idx_book_author'
+      },
+      {
+        fields: ['owner_id'],
+        name: 'idx_book_owner'
+      },
+      {
+        fields: ['title'],
+        name: 'idx_book_title'
+      },
+      {
+        fields: ['status', 'genre'],
+        name: 'idx_book_status_genre'
+      }
+    ]
   });
 
   return Book;
