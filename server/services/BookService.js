@@ -35,7 +35,7 @@ class BookService {
   }
 
   /**
-   * Add a new book (seller)
+   * Add a new book by seller
    */
   static async create(bookData, userId) {
     const book = await Book.create({
@@ -48,7 +48,7 @@ class BookService {
   }
 
   /**
-   * Update book details
+   * Update the book details
    */
   static async update(bookId, updateData) {
     const book = await Book.findByPk(bookId);
@@ -61,7 +61,7 @@ class BookService {
   }
 
   /**
-   * Delete book (owner or admin)
+   * Delete book by owner or admin
    */
   static async delete(bookId, userId, userRole) {
     const book = await Book.findByPk(bookId);
