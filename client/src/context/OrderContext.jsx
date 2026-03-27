@@ -1,10 +1,12 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { AuthContext } from "./AuthContext";
+import { OrderContext } from "./OrderContextValue";
 import { PLACE_ORDER } from "../graphql/mutations";
 import { GET_MY_ORDERS } from "../graphql/queries";
 
-export const OrderContext = createContext();
+// Re-export OrderContext for use in components
+export { OrderContext };
 
 function formatOrderDate(value) {
   if (!value) {
@@ -52,7 +54,6 @@ export function OrderProvider({ children }) {
 
   useEffect(() => {
     if (!isLoggedIn) {
-      setOrders([]);
       return;
     }
 
