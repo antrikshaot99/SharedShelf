@@ -9,7 +9,7 @@ const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
 require("./config/db");
 
-// Initialize Sequelize models
+// Initialize Sequelize models and jwt and start server
 const { sequelize } = require("./models");
 
 const JWT_SECRET = process.env.JWT_SECRET || 'sharedshelf_secret_key_2026';
