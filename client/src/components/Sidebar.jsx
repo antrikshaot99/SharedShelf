@@ -14,8 +14,6 @@ const secondaryItems = [
   { icon: "📖", label: "My Rentals", path: "/rentals" },
 ];
 
-const bottomItems = [];
-
 export default function Sidebar({ userName, onLogout }) {
   const navigate = useNavigate();
   const location = useLocation();
