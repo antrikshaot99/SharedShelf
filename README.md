@@ -10,14 +10,14 @@ A full-stack web application for buying, selling, and renting books. Built with 
 
 ## ✨ Features
 
--**User Authentication – Secure user registration and login powered by JWT-based authentication
--**Book Marketplace – Explore, search, and discover books from multiple sellers in one place
--**Book Rentals – Rent books for flexible durations at budget-friendly prices
--**Sell Your Books – Easily list and sell your books directly to other users
--**Shopping Cart – Add, update, and manage items before completing purchases
--**Order Management – View and track order history and transaction details
--**Admin Dashboard – Advanced admin panel to manage users, books, and orders efficiently
--**Responsive Design – Optimized for seamless experience across desktop, tablet, and mobile devices
+- **User Authentication** – Secure user registration and login powered by JWT-based authentication
+- **Book Marketplace** – Explore, search, and discover books from multiple sellers in one place
+- **Book Rentals** – Rent books for flexible durations at budget-friendly prices
+- **Sell Your Books** – Easily list and sell your books directly to other users
+- **Shopping Cart** – Add, update, and manage items before completing purchases
+- **Order Management** – View and track order history and transaction details
+- **Admin Dashboard** – Advanced admin panel to manage users, books, and orders efficiently
+- **Responsive Design** – Optimized for seamless experience across desktop, tablet, and mobile devices
 
 ## 🏗️ Architecture
 
