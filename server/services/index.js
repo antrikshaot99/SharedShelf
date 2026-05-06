@@ -4,6 +4,7 @@ const CartService = require('./CartService');     // Handles shopping cart funct
 const OrderService = require('./OrderService');   // Processes orders and order history
 const RentalService = require('./RentalService'); // Manages book rentals
 const StatsService = require('./StatsService');   // Provides statistics and analytics
+const EmailService = require('./EmailService');   // Handles email notifications
 
 
 module.exports = {
@@ -12,5 +13,6 @@ module.exports = {
   CartService,
   OrderService,
   RentalService,
-  StatsService
+  StatsService,
+  EmailService
 };

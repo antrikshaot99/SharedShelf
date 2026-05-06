@@ -7,6 +7,7 @@ const { expressMiddleware } = require("@as-integrations/express5");
 require("dotenv").config();
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
+const { EmailService } = require("./services");
 require("./config/db");
 
 // Initialize Sequelize models and jwt and start server
@@ -55,9 +56,17 @@ async function startServer() {
     }
   }));
 
-  app.listen(5000, () => {
+  app.listen(5000, async () => {
     console.log("🚀 Server running on http://localhost:5000/graphql");
     console.log("📚 Shared Self GraphQL API ready");
+    
+    // Verify email service configuration
+    try {
+      await EmailService.verifyConnection();
+      console.log("📧 Email service ready for sending notifications");
+    } catch (error) {
+      console.warn("⚠️ Email service verification failed - check .env configuration");
+    }
   });
 }
 

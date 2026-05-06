@@ -1,5 +1,6 @@
 const { Order, OrderItem, CartItem, Book, Rental, User, sequelize } = require('../models');
 const CartService = require('./CartService');
+const EmailService = require('./EmailService');
 
 class OrderService {
   /**
@@ -91,7 +92,8 @@ class OrderService {
         user_id: userId,
         totalAmount,
         status: 'completed',
-        orderType
+        orderType,
+        createdAt: new Date()
       }, { transaction });
 
       // Create order items and rentals
@@ -133,13 +135,31 @@ class OrderService {
       await transaction.commit();
 
       // Return full order with items
-      return await Order.findByPk(order.id, {
+      const completedOrder = await Order.findByPk(order.id, {
         include: [{
           model: OrderItem,
           as: 'items',
           include: [{ model: Book, as: 'book' }]
         }]
       });
+
+      // Send order confirmation email
+      try {
+        const user = await User.findByPk(userId);
+        if (user && user.email) {
+          await EmailService.sendOrderConfirmation(
+            user.email,
+            user.name,
+            completedOrder,
+            completedOrder.items
+          );
+        }
+      } catch (emailError) {
+        console.error('Failed to send order confirmation email:', emailError);
+        // Don't throw error - order is already placed successfully
+      }
+
+      return completedOrder;
     } catch (error) {
       // Rollback transaction on error
       if (transaction && !transaction.finished) {
