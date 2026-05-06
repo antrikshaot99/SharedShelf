@@ -2,7 +2,7 @@ require('dotenv').config();
 const { sequelize, Book } = require('./models');
 
 const booksData = [
-  // Fiction
+  // Fictional books
   {
     title: "The Great Gatsby",
     author: "F. Scott Fitzgerald",
@@ -342,11 +342,11 @@ async function seedDatabase() {
     await sequelize.sync({ alter: false });
     console.log('✅ Database synchronized');
 
-    // Clear existing books (optional)
+    // Clear the existing books (optional)
     await Book.destroy({ where: {} });
     console.log('🗑️  Cleared existing books');
 
-    // Create books
+    // Create new books
     const createdBooks = await Book.bulkCreate(booksData);
     console.log(`✅ Successfully seeded ${createdBooks.length} books into the database`);
     
