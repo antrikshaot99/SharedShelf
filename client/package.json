@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@apollo/client": "^4.1.6",
+    "firebase": "^12.13.0",
+    "firebase-admin": "^13.9.0",
     "graphql": "^16.13.1",
     "graphql-tag": "^2.12.6",
     "react": "^19.2.0",

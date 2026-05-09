@@ -1,13 +1,11 @@
-import { useState, useContext } from "react";
-import { useMutation } from "@apollo/client/react";
-import { REGISTER } from "../graphql/mutations";
+import { useState } from "react";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
 import Logo from "../components/Logo";
 
 export default function Register() {
   const navigate = useNavigate();
-  const { updateAuthState } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     name: "",
@@ -15,16 +13,16 @@ export default function Register() {
     password: "",
   });
 
-  const [register] = useMutation(REGISTER);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const { data } = await register({ variables: form });
-
-      updateAuthState(data.register.token, data.register.user);
-
+      const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
+      // Update the user profile with the name
+      await updateProfile(userCredential.user, {
+        displayName: form.name
+      });
+      // Firebase will automatically update the auth state
       navigate("/dashboard");
     } catch (err) {
       alert("Registration failed: " + err.message);
