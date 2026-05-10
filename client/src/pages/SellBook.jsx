@@ -310,6 +310,8 @@ export default function SellBook() {
                     placeholder="299"
                     required
                     type="number"
+                    min="0"
+                    step="1"
                     value={form.price}
                     onChange={e => setForm({ ...form, price: e.target.value })}
                     style={{

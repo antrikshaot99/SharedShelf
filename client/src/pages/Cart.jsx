@@ -1,12 +1,10 @@
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
-import { OrderContext } from "../context/OrderContext";
 import { useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
 
 export default function Cart() {
   const { cart, addToCart, removeFromCart, clearCart } = useContext(CartContext);
-  const { placeOrder, isPlacingOrder } = useContext(OrderContext);
   const navigate = useNavigate();
 
   const total = parseFloat((cart.reduce((s, i) => s + i.price * i.quantity, 0)).toFixed(2));
@@ -346,16 +344,7 @@ export default function Cart() {
               </div>
 
               <button
-                onClick={async () => {
-                  try {
-                    await placeOrder();
-                    clearCart();
-                    navigate("/orders");
-                  } catch (error) {
-                    console.error("Error placing order:", error);
-                    alert("Failed to place order: " + error.message);
-                  }
-                }}
+                onClick={() => navigate("/checkout")}
                 style={{
                   width: "100%",
                   padding: "16px",
@@ -367,24 +356,6 @@ export default function Cart() {
                   fontWeight: 600,
                   cursor: "pointer",
                   boxShadow: "var(--shadow-primary)",
-                  marginBottom: 12,
-                }}
-              >
-                {isPlacingOrder ? "Placing Order..." : "Checkout Now"}
-              </button>
-
-              <button
-                onClick={() => navigate("/checkout")}
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  borderRadius: 14,
-                  border: "1.5px solid var(--ink-200)",
-                  background: "white",
-                  color: "var(--ink-700)",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: "pointer",
                 }}
               >
                 Proceed to Checkout Page

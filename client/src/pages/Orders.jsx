@@ -8,8 +8,10 @@ export default function Orders() {
   const navigate = useNavigate();
 
   const totalOrders = orders.length;
-  const totalSpent = orders.reduce((sum, order) => 
-    sum + order.items.reduce((s, item) => s + item.price * item.quantity, 0), 0
+  const totalSpent = parseFloat(
+    orders.reduce((sum, order) => 
+      sum + order.items.reduce((s, item) => s + item.price * item.quantity, 0), 0
+    ).toFixed(2)
   );
 
   return (
@@ -77,7 +79,7 @@ export default function Orders() {
             border: "1px solid var(--ink-200)",
           }}>
             <div style={{ fontSize: 14, color: "var(--ink-500)", marginBottom: 8 }}>Total Spent</div>
-            <div style={{ fontSize: 32, fontWeight: 800, color: "var(--primary)" }}>₹{totalSpent}</div>
+            <div style={{ fontSize: 32, fontWeight: 800, color: "var(--primary)" }}>₹{totalSpent.toFixed(2)}</div>
           </div>
           <div style={{
             background: "white",
@@ -195,7 +197,7 @@ export default function Orders() {
                         fontWeight: 700, 
                         color: "var(--ink-900)",
                         fontSize: 16,
-                      }}>#{order.id}</div>
+                      }}>#{orders.length - orderIndex}</div>
                     </div>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
