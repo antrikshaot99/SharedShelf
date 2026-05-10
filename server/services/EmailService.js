@@ -58,8 +58,8 @@ class EmailService {
           <tr>
             <td style="padding: 12px; border-bottom: 1px solid #f0f0f0;">${item.book.title}</td>
             <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; text-align: center;">${item.quantity}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; text-align: right;">$${parseFloat(item.price).toFixed(2)}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; text-align: right;">$${(item.price * item.quantity).toFixed(2)}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; text-align: right;">₹${parseFloat(item.price).toFixed(2)}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #f0f0f0; text-align: right;">₹${(item.price * item.quantity).toFixed(2)}</td>
           </tr>
         `
       )
@@ -147,7 +147,7 @@ class EmailService {
                     ${itemsHtml}
                     <tr class="total-row">
                       <td colspan="3" style="text-align: right;">Total Amount:</td>
-                      <td style="text-align: right;">$${parseFloat(order.totalAmount).toFixed(2)}</td>
+                      <td style="text-align: right;">₹${parseFloat(order.totalAmount).toFixed(2)}</td>
                     </tr>
                   </table>
                 </div>
