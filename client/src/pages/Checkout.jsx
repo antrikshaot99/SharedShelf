@@ -9,11 +9,112 @@ export default function Checkout() {
   const { placeOrder, isPlacingOrder } = useContext(OrderContext);
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState("card");
+  
+  // Card form state
+  const [cardDetails, setCardDetails] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    cardholderName: "",
+  });
+  
+  // UPI state
+  const [upiId, setUpiId] = useState("");
+  
+  // Validation errors
+  const [errors, setErrors] = useState({});
 
   const total = parseFloat((cart.reduce((s, item) => s + item.price * item.quantity, 0)).toFixed(2));
   const itemCount = cart.reduce((s, i) => s + i.quantity, 0);
 
+  // Validation functions
+  const validateCardNumber = (number) => {
+    const cleaned = number.replace(/\s/g, "");
+    if (!/^\d{16}$/.test(cleaned)) {
+      return "Card number must be 16 digits";
+    }
+    return "";
+  };
+
+  const validateExpiryDate = (expiry) => {
+    if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+      return "Expiry must be in MM/YY format";
+    }
+    const [month, year] = expiry.split("/");
+    const monthNum = parseInt(month, 10);
+    if (monthNum < 1 || monthNum > 12) {
+      return "Invalid month (01-12)";
+    }
+    
+    // Check if card is expired
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear() % 100;
+    const currentMonth = currentDate.getMonth() + 1;
+    const expiryYear = parseInt(year, 10);
+    
+    if (expiryYear < currentYear || (expiryYear === currentYear && monthNum < currentMonth)) {
+      return "Card has expired";
+    }
+    return "";
+  };
+
+  const validateCVV = (cvv) => {
+    if (!/^\d{3,4}$/.test(cvv)) {
+      return "CVV must be 3 or 4 digits";
+    }
+    return "";
+  };
+
+  const validateCardholderName = (name) => {
+    if (!name.trim()) {
+      return "Cardholder name is required";
+    }
+    if (!/^[a-zA-Z\s]+$/.test(name)) {
+      return "Cardholder name can only contain letters";
+    }
+    return "";
+  };
+
+  const validateUPI = (upi) => {
+    if (!upi.trim()) {
+      return "UPI ID is required";
+    }
+    if (!/^[a-zA-Z0-9._-]+@[a-zA-Z]{3,}$/.test(upi)) {
+      return "Invalid UPI format (e.g., username@bank)";
+    }
+    return "";
+  };
+
+  // Validate form based on payment method
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (paymentMethod === "card") {
+      const cardNumberError = validateCardNumber(cardDetails.cardNumber);
+      if (cardNumberError) newErrors.cardNumber = cardNumberError;
+
+      const expiryError = validateExpiryDate(cardDetails.expiryDate);
+      if (expiryError) newErrors.expiryDate = expiryError;
+
+      const cvvError = validateCVV(cardDetails.cvv);
+      if (cvvError) newErrors.cvv = cvvError;
+
+      const nameError = validateCardholderName(cardDetails.cardholderName);
+      if (nameError) newErrors.cardholderName = nameError;
+    } else if (paymentMethod === "upi") {
+      const upiError = validateUPI(upiId);
+      if (upiError) newErrors.upi = upiError;
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleCheckout = async () => {
+    if (!validateForm()) {
+      return; // Validation errors are already displayed inline
+    }
+
     try {
       await placeOrder();
       clearCart();
@@ -21,6 +122,20 @@ export default function Checkout() {
     } catch (error) {
       console.error("Error placing order:", error);
       alert("Failed to place order: " + error.message);
+    }
+  };
+
+  const handleCardInputChange = (field, value) => {
+    setCardDetails(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ""
+      }));
     }
   };
 
@@ -269,16 +384,24 @@ export default function Checkout() {
                     <input
                       type="text"
                       placeholder="1234 5678 9012 3456"
+                      value={cardDetails.cardNumber}
+                      onChange={(e) => handleCardInputChange("cardNumber", e.target.value)}
+                      maxLength="19"
                       style={{
                         width: "100%",
                         padding: "14px 16px",
                         borderRadius: 10,
-                        border: "1.5px solid var(--ink-200)",
+                        border: errors.cardNumber ? "1.5px solid var(--accent-red)" : "1.5px solid var(--ink-200)",
                         fontSize: 15,
                         outline: "none",
                         boxSizing: "border-box",
                       }}
                     />
+                    {errors.cardNumber && (
+                      <span style={{ fontSize: 12, color: "var(--accent-red)", marginTop: 4, display: "block" }}>
+                        ⚠️ {errors.cardNumber}
+                      </span>
+                    )}
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                     <div>
@@ -288,16 +411,24 @@ export default function Checkout() {
                       <input
                         type="text"
                         placeholder="MM/YY"
+                        value={cardDetails.expiryDate}
+                        onChange={(e) => handleCardInputChange("expiryDate", e.target.value)}
+                        maxLength="5"
                         style={{
                           width: "100%",
                           padding: "14px 16px",
                           borderRadius: 10,
-                          border: "1.5px solid var(--ink-200)",
+                          border: errors.expiryDate ? "1.5px solid var(--accent-red)" : "1.5px solid var(--ink-200)",
                           fontSize: 15,
                           outline: "none",
                           boxSizing: "border-box",
                         }}
                       />
+                      {errors.expiryDate && (
+                        <span style={{ fontSize: 12, color: "var(--accent-red)", marginTop: 4, display: "block" }}>
+                          ⚠️ {errors.expiryDate}
+                        </span>
+                      )}
                     </div>
                     <div>
                       <label style={{ fontSize: 13, fontWeight: 500, color: "var(--ink-600)", marginBottom: 6, display: "block" }}>
@@ -306,16 +437,24 @@ export default function Checkout() {
                       <input
                         type="text"
                         placeholder="123"
+                        value={cardDetails.cvv}
+                        onChange={(e) => handleCardInputChange("cvv", e.target.value)}
+                        maxLength="4"
                         style={{
                           width: "100%",
                           padding: "14px 16px",
                           borderRadius: 10,
-                          border: "1.5px solid var(--ink-200)",
+                          border: errors.cvv ? "1.5px solid var(--accent-red)" : "1.5px solid var(--ink-200)",
                           fontSize: 15,
                           outline: "none",
                           boxSizing: "border-box",
                         }}
                       />
+                      {errors.cvv && (
+                        <span style={{ fontSize: 12, color: "var(--accent-red)", marginTop: 4, display: "block" }}>
+                          ⚠️ {errors.cvv}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div>
@@ -325,17 +464,74 @@ export default function Checkout() {
                     <input
                       type="text"
                       placeholder="John Doe"
+                      value={cardDetails.cardholderName}
+                      onChange={(e) => handleCardInputChange("cardholderName", e.target.value)}
                       style={{
                         width: "100%",
                         padding: "14px 16px",
                         borderRadius: 10,
-                        border: "1.5px solid var(--ink-200)",
+                        border: errors.cardholderName ? "1.5px solid var(--accent-red)" : "1.5px solid var(--ink-200)",
                         fontSize: 15,
                         outline: "none",
                         boxSizing: "border-box",
                       }}
                     />
+                    {errors.cardholderName && (
+                      <span style={{ fontSize: 12, color: "var(--accent-red)", marginTop: 4, display: "block" }}>
+                        ⚠️ {errors.cardholderName}
+                      </span>
+                    )}
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* UPI Details (shown when UPI selected) */}
+            {paymentMethod === "upi" && (
+              <div style={{
+                background: "white",
+                borderRadius: 16,
+                padding: 24,
+                border: "1px solid var(--ink-200)",
+              }}>
+                <h3 style={{ fontSize: 15, fontWeight: 600, color: "var(--ink-700)", marginBottom: 20 }}>
+                  UPI Information
+                </h3>
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 500, color: "var(--ink-600)", marginBottom: 6, display: "block" }}>
+                    UPI ID
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="username@upi"
+                    value={upiId}
+                    onChange={(e) => {
+                      setUpiId(e.target.value);
+                      if (errors.upi) {
+                        setErrors(prev => ({
+                          ...prev,
+                          upi: ""
+                        }));
+                      }
+                    }}
+                    style={{
+                      width: "100%",
+                      padding: "14px 16px",
+                      borderRadius: 10,
+                      border: errors.upi ? "1.5px solid var(--accent-red)" : "1.5px solid var(--ink-200)",
+                      fontSize: 15,
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                  {errors.upi && (
+                    <span style={{ fontSize: 12, color: "var(--accent-red)", marginTop: 4, display: "block" }}>
+                      ⚠️ {errors.upi}
+                    </span>
+                  )}
+                  <p style={{ fontSize: 12, color: "var(--ink-500)", marginTop: 8 }}>
+                    Format: username@upi (e.g., john@okhdfcbank)
+                  </p>
                 </div>
               </div>
             )}
@@ -402,12 +598,24 @@ export default function Checkout() {
               <span style={{ fontSize: 24, fontWeight: 800, color: "var(--ink-900)" }}>₹{total}</span>
             </div>
 
-            <button onClick={handleCheckout} style={{
-              width: "100%", padding: "16px", borderRadius: 14, border: "none",
-              background: "var(--gradient-primary)", color: "white", fontWeight: 600,
-              fontSize: 16, cursor: "pointer", marginTop: 24,
-              boxShadow: "var(--shadow-primary)",
-            }}>
+            <button 
+              onClick={handleCheckout} 
+              disabled={isPlacingOrder}
+              style={{
+                width: "100%", 
+                padding: "16px", 
+                borderRadius: 14, 
+                border: "none",
+                background: isPlacingOrder ? "var(--ink-300)" : "var(--gradient-primary)", 
+                color: "white", 
+                fontWeight: 600,
+                fontSize: 16, 
+                cursor: isPlacingOrder ? "not-allowed" : "pointer", 
+                marginTop: 24,
+                boxShadow: isPlacingOrder ? "none" : "var(--shadow-primary)",
+                opacity: isPlacingOrder ? 0.6 : 1,
+              }}
+            >
               {isPlacingOrder ? "Placing Order..." : `Complete Order • ₹${total}`}
             </button>
 
