@@ -1,30 +1,23 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@apollo/client/react";
-import { LOGIN } from "../graphql/mutations";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 import { AuthContext } from "../context/AuthContext";
 import Logo from "../components/Logo";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { updateAuthState } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
-  const [loginMutation] = useMutation(LOGIN);
-
   const handleLogin = async () => {
     try {
-      const { data } = await loginMutation({
-        variables: { email: form.email, password: form.password },
-      });
-
-      updateAuthState(data.login.token, data.login.user);
-
-      navigate(data.login.user.role === "admin" ? "/admin" : "/dashboard");
+      await signInWithEmailAndPassword(auth, form.email, form.password);
+      // Firebase will automatically update the auth state via onAuthStateChanged
+      navigate("/dashboard"); // Default to dashboard, you can customize based on user role
     } catch (err) {
       alert("Login failed: " + err.message);
     }

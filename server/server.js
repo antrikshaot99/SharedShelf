@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-const jwt = require("jsonwebtoken");
 const { ApolloServer } = require("@apollo/server");
 const { expressMiddleware } = require("@as-integrations/express5");
+const admin = require("firebase-admin");
 
 require("dotenv").config();
 const typeDefs = require("./graphql/typeDefs");
@@ -13,7 +13,11 @@ require("./config/db");
 // Initialize Sequelize models and jwt and start server
 const { sequelize } = require("./models");
 
-const JWT_SECRET = process.env.JWT_SECRET || 'sharedshelf_secret_key_2026';
+// Initialize Firebase Admin
+// For production, use service account key: admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+admin.initializeApp({
+  projectId: process.env.FIREBASE_PROJECT_ID || 'your-project-id' // Replace with your Firebase project ID
+});
 
 async function startServer() {
   const app = express();
@@ -46,9 +50,15 @@ async function startServer() {
       let user = null;
       if (token) {
         try {
-          user = jwt.verify(token, JWT_SECRET);
+          const decodedToken = await admin.auth().verifyIdToken(token);
+          user = {
+            uid: decodedToken.uid,
+            email: decodedToken.email,
+            name: decodedToken.name || decodedToken.email,
+            role: 'user' // Default role, can be customized with custom claims
+          };
         } catch (err) {
-          console.log('Invalid token');
+          console.log('Invalid Firebase token:', err.message);
         }
       }
       

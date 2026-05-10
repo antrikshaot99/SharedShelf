@@ -1,4 +1,6 @@
 import { createContext, useReducer, useEffect } from 'react';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from '../firebase';
 
 /**
  * AuthContext - Centralized authentication state management
@@ -49,32 +51,34 @@ export function AuthProvider({ children }) {
   const [authState, dispatch] = useReducer(authReducer, initialState);
 
   /**
-   * HYDRATION: On mount, check localStorage for existing auth state
-   * This ensures that if the page is refreshed, the user stays logged in
+   * HYDRATION: On mount, listen to Firebase auth state changes
+   * This ensures the auth state is synced with Firebase Authentication
    */
   useEffect(() => {
-    const savedToken = localStorage.getItem('token');
-    const savedIsLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in
+        user.getIdToken().then((token) => {
+          dispatch({
+            type: 'LOGIN',
+            payload: {
+              token,
+              user: {
+                id: user.uid,
+                name: user.displayName || user.email,
+                email: user.email,
+                role: 'user' // Default role, you can customize based on custom claims
+              }
+            }
+          });
+        });
+      } else {
+        // User is signed out
+        dispatch({ type: 'LOGOUT' });
+      }
+    });
 
-    if (savedToken && savedIsLoggedIn) {
-      const savedUserId = localStorage.getItem('userId');
-      const savedUserName = localStorage.getItem('userName');
-      const savedUserRole = localStorage.getItem('userRole');
-
-      dispatch({
-        type: 'LOGIN',
-        payload: {
-          token: savedToken,
-          user: {
-            id: savedUserId,
-            name: savedUserName,
-            role: savedUserRole
-          }
-        }
-      });
-    } else {
-      dispatch({ type: 'HYDRATE_COMPLETE' });
-    }
+    return () => unsubscribe(); // Cleanup subscription on unmount
   }, []);
 
   /**
@@ -106,8 +110,12 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = () => {
-    updateAuthState(null, null);
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   const value = {

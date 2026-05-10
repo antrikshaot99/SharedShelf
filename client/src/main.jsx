@@ -18,6 +18,9 @@ import {
   ApolloLink,
 } from "@apollo/client";
 
+// Import Firebase auth
+import { auth } from "./firebase";
+
 // Apollo Provider to wrap the app
 import { ApolloProvider } from "@apollo/client/react";
 
@@ -30,11 +33,14 @@ import "./App.css";
    ───────────────────────────────────────────── */
 
 // This link runs BEFORE every GraphQL request
-// It injects the JWT token into request headers
-const authLink = new ApolloLink((operation, forward) => {
+// It injects the Firebase ID token into request headers
+const authLink = new ApolloLink(async (operation, forward) => {
 
-  // Get token from browser localStorage
-  const token = localStorage.getItem('token');
+  // Get current user from Firebase
+  const user = auth.currentUser;
+
+  // If user is logged in, get ID token
+  const token = user ? await user.getIdToken() : null;
 
   // Attach token to request headers
   operation.setContext({
