@@ -12,6 +12,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import SellBook from "./pages/SellBook";
 import Rentals from "./pages/Rentals";
 import Logo from "./components/Logo";
+import Footer from "./components/Footer";
 
 function Landing() {
   const authContext = useContext(AuthContext);
@@ -335,6 +336,9 @@ function Landing() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
