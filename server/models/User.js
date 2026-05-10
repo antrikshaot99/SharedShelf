@@ -7,6 +7,12 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
+    firebaseUid: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      unique: true,
+      comment: "Firebase UID for authentication"
+    },
     name: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -37,14 +43,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       validate: {
         len: {
           args: [6, 255],
           msg: "Password must be at least 6 characters long"
-        },
-        notEmpty: {
-          msg: "Password cannot be empty"
         }
       }
     },

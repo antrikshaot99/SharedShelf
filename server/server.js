@@ -7,7 +7,7 @@ const admin = require("firebase-admin");
 require("dotenv").config();
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
-const { EmailService } = require("./services");
+const { EmailService, UserService } = require("./services");
 require("./config/db");
 
 // Initialize Sequelize models and jwt and start server
@@ -64,14 +64,23 @@ async function startServer() {
       if (token) {
         try {
           const decodedToken = await admin.auth().verifyIdToken(token);
+          console.log('✅ Firebase token verified for user:', decodedToken.email);
+          
+          // Find or create user in database
+          const dbUser = await UserService.findOrCreateByFirebaseUid(
+            decodedToken.uid,
+            decodedToken.email,
+            decodedToken.name
+          );
+          
           user = {
-            id: decodedToken.uid,
-            uid: decodedToken.uid,
+            id: dbUser.id,          // Integer ID from database (for foreign keys)
+            uid: decodedToken.uid,   // Firebase UID (for reference)
             email: decodedToken.email,
             name: decodedToken.name || decodedToken.email,
-            role: 'user' // Default role, can be customized with custom claims
+            role: dbUser.role || 'user'
           };
-          console.log('✅ Firebase token verified for user:', user.email);
+          console.log('✅ Database user resolved:', user.email, '(id:', user.id + ')');
         } catch (err) {
           console.log('❌ Firebase token verification failed:', err.message);
         }

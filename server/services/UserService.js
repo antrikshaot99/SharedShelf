@@ -164,6 +164,51 @@ class UserService {
     await user.destroy();
     return deletedUser;
   }
+
+  /**
+   * Find or create user by Firebase UID
+   * This is used when authenticating with Firebase
+   */
+  static async findOrCreateByFirebaseUid(firebaseUid, email, displayName) {
+    // Try to find existing user by Firebase UID
+    let user = await User.findOne({ where: { firebaseUid } });
+
+    if (user) {
+      return user;
+    }
+
+    // Check if user with this email already exists
+    user = await User.findOne({ where: { email } });
+
+    if (user) {
+      // Update existing user with Firebase UID
+      user.firebaseUid = firebaseUid;
+      await user.save();
+      return user;
+    }
+
+    // Create new user
+    user = await User.create({
+      firebaseUid,
+      email,
+      name: displayName || email.split('@')[0],
+      password: null, // No password for Firebase auth
+      role: 'user'
+    });
+
+    return user;
+  }
+
+  /**
+   * Get user by Firebase UID
+   */
+  static async getByFirebaseUid(firebaseUid) {
+    const user = await User.findOne({ where: { firebaseUid } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
+  }
 }
 
 module.exports = UserService;
