@@ -14,19 +14,10 @@ const secondaryItems = [
   { icon: "📖", label: "My Rentals", path: "/rentals" },
 ];
 
-export default function Sidebar({ userName, onLogout }) {
+export default function Sidebar({ userName, userEmail, onLogout }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { cart } = useContext(CartContext);
-  const token = localStorage.getItem("token");
-
-  let userEmail = "";
-  try {
-    const payload = token ? JSON.parse(atob(token.split(".")[1])) : null;
-    userEmail = payload?.email || "";
-  } catch {
-    userEmail = "";
-  }
 
   const cartCount = cart?.reduce((sum, item) => sum + (item.quantity || 1), 0) || 0;
 

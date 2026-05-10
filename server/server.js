@@ -43,25 +43,41 @@ async function startServer() {
   // GraphQL endpoint with authentication context
   app.use("/graphql", expressMiddleware(server, {
     context: async ({ req }) => {
+      console.log('🔍 GRAPHQL REQUEST RECEIVED');
+      console.log('📋 Request headers:', Object.keys(req.headers));
+      
       // Extract token from Authorization header
       const authHeader = req.headers.authorization || '';
-      const token = authHeader.replace('Bearer ', '');
+      const token = authHeader.replace('Bearer ', '').trim();
       
       let user = null;
+      
+      // Debug logging
+      if (!authHeader) {
+        console.log('ℹ️ No authorization header provided');
+      } else if (!token) {
+        console.log('⚠️ Authorization header present but no token extracted:', authHeader);
+      } else {
+        console.log('🔐 Token received, attempting Firebase verification...');
+      }
+      
       if (token) {
         try {
           const decodedToken = await admin.auth().verifyIdToken(token);
           user = {
+            id: decodedToken.uid,
             uid: decodedToken.uid,
             email: decodedToken.email,
             name: decodedToken.name || decodedToken.email,
             role: 'user' // Default role, can be customized with custom claims
           };
+          console.log('✅ Firebase token verified for user:', user.email);
         } catch (err) {
-          console.log('Invalid Firebase token:', err.message);
+          console.log('❌ Firebase token verification failed:', err.message);
         }
       }
       
+      console.log('👤 Context user set to:', user ? user.email : 'null');
       return { user };
     }
   }));

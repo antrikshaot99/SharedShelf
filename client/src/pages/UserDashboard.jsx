@@ -425,7 +425,6 @@ export default function UserDashboard() {
   const navigate = useNavigate();
   const [selectedGenre, setSelectedGenre] = useState("All");
   const [activeTab, setActiveTab] = useState("Home");
-  const currentUserId = localStorage.getItem("userId");
   const userName = localStorage.getItem("userName");
 
   const authContext = useContext(AuthContext);
@@ -493,7 +492,7 @@ export default function UserDashboard() {
   const filteredBooks = selectedGenre === "All"
     ? data.books
     : selectedGenre === "Your Listings"
-      ? data.books.filter((b) => String(b.owner_id) === String(currentUserId))
+      ? data.books.filter((b) => b.owner_id != null && authContext?.user?.id != null && String(b.owner_id) === String(authContext?.user?.id))
       : data.books.filter((b) => b.genre === selectedGenre);
 
   const sectionTitle = selectedGenre === "All" ? "All Books" : selectedGenre;
@@ -501,7 +500,7 @@ export default function UserDashboard() {
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "var(--ink-100)" }}>
       {/* Sidebar */}
-      <Sidebar userName={userName} onLogout={handleLogout} />
+      <Sidebar userName={authContext?.user?.name || userName} userEmail={authContext?.user?.email} onLogout={handleLogout} />
 
       {/* Main Content */}
       <div style={{ marginLeft: 260, flex: 1, display: "flex", flexDirection: "column" }}>
@@ -579,7 +578,7 @@ export default function UserDashboard() {
                 book={book}
                 mode={mode}
                 onAddToCart={addToCart}
-                isOwner={String(book.owner_id) === String(currentUserId)}
+                isOwner={book.owner_id != null && authContext?.user?.id != null && String(book.owner_id) === String(authContext?.user?.id)}
               />
             ))}
           </div>

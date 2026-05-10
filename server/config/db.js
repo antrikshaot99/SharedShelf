@@ -7,7 +7,7 @@ const config = {
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "root",
   database: process.env.DB_NAME || "sharedshelf",
-  connectionTimeout: 30000,
+  connectTimeout: 30000,
   waitForConnections: true,
   queueLimit: 0,
 };

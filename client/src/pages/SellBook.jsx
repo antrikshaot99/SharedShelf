@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useMutation } from "@apollo/client/react";
 import { ADD_BOOK } from "../graphql/mutations";
 import { useNavigate } from "react-router-dom";
 import { gql } from "@apollo/client";
 import Logo from "../components/Logo";
+import { AuthContext } from "../context/AuthContext";
 
 const GET_BOOKS = gql`
   query GetBooks {
@@ -19,6 +20,7 @@ const GET_BOOKS = gql`
 `;
 
 export default function SellBook() {
+  const authContext = useContext(AuthContext);
   const [form, setForm] = useState({
     title: "",
     author: "",
@@ -43,7 +45,6 @@ export default function SellBook() {
           genre: form.genre,
           price: parseFloat(form.price) || 0,
           rent_price: parseFloat(form.price) * 0.1 || 0,
-          owner_id: localStorage.getItem("userId") || "1",
         },
       });
       navigate("/dashboard");
@@ -335,7 +336,7 @@ export default function SellBook() {
 
               <button 
                 type="submit" 
-                disabled={isSubmitting || !form.genre}
+                disabled={isSubmitting || !form.genre || !authContext?.user}
                 style={{
                   padding: "16px",
                   fontSize: 15,

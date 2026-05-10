@@ -15,8 +15,8 @@ import {
   ApolloClient,
   InMemoryCache,
   HttpLink,
-  ApolloLink,
 } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 
 // Import Firebase auth
 import { auth } from "./firebase";
@@ -34,23 +34,36 @@ import "./App.css";
 
 // This link runs BEFORE every GraphQL request
 // It injects the Firebase ID token into request headers
-const authLink = new ApolloLink(async (operation, forward) => {
+const authLink = setContext(async (operation, { headers }) => {
 
   // Get current user from Firebase
   const user = auth.currentUser;
+  
+  console.log('🔗 Apollo Link - Operation:', operation.operationName, 'User:', user?.email || 'No user');
 
   // If user is logged in, get ID token
-  const token = user ? await user.getIdToken() : null;
+  let token = null;
+  if (user) {
+    try {
+      token = await user.getIdToken();
+      console.log('✅ Apollo Link - Token obtained for:', user.email);
+    } catch (error) {
+      console.warn("❌ Apollo Link - Unable to fetch Firebase token:", error.message);
+    }
+  } else {
+    console.warn('⚠️ Apollo Link - No user in Firebase auth');
+  }
 
   // Attach token to request headers
-  operation.setContext({
+  const authHeader = token ? `Bearer ${token}` : '';
+  console.log('📤 Apollo Link - Sending with auth header:', authHeader ? 'YES (token present)' : 'NO (empty)');
+  
+  return {
     headers: {
-      authorization: token ? `Bearer ${token}` : '', // If token exists → send it
+      ...headers,
+      authorization: authHeader,
     }
-  });
-
-  // Pass request to next link (httpLink)
-  return forward(operation);
+  };
 });
 
 /* ─────────────────────────────────────────────
