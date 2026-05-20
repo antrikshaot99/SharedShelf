@@ -171,18 +171,6 @@ Password: admin123
 
 **Important:** Change these credentials in production!
 
-## 🔄 Recent Updates & Fixes
-
-### May 2026 Release
-- ✅ **Firebase Integration** - Migrated to personal Firebase project (sharedshelf-7278b)
-- ✅ **Google Sign-In** - One-click login with Google accounts
-- ✅ **Admin Role-Based Routing** - Automatic redirect to Admin Dashboard for admin users
-- ✅ **Smart Book Filtering** - Users don't see their own books or rentals in marketplace
-- ✅ **Logout Fix** - Proper Firebase sign-out functionality for admin users
-- ✅ **API Configuration** - Fixed default API URL to use correct port (5000)
-- ✅ **Database User ID** - Uses database ID instead of Firebase UID for better relational integrity
-- ✅ **Admin Credentials** - Stored securely in environment variables
-
 ## 🎯 Key Features Explained
 
 ### Book Filtering
