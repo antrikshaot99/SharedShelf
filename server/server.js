@@ -16,7 +16,7 @@ const { sequelize } = require("./models");
 // Initialize Firebase Admin
 // For production, use service account key: admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 admin.initializeApp({
-  projectId: process.env.FIREBASE_PROJECT_ID || 'sharedshelf-34ac9' // Replace with your Firebase project ID
+  projectId: process.env.FIREBASE_PROJECT_ID || 'sharedshelf-7278b'
 });
 
 async function startServer() {

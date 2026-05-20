@@ -1,17 +1,30 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import Logo from "../components/Logo";
 
 export default function Register() {
   const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
   });
+
+  // When auth state changes, redirect based on role
+  useEffect(() => {
+    if (authContext?.isLoggedIn && authContext?.user?.role) {
+      if (authContext.user.role === 'admin') {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
+    }
+  }, [authContext?.isLoggedIn, authContext?.user?.role, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,8 +35,7 @@ export default function Register() {
       await updateProfile(userCredential.user, {
         displayName: form.name
       });
-      // Firebase will automatically update the auth state
-      navigate("/dashboard");
+      // AuthContext will update via onAuthStateChanged and trigger the useEffect above
     } catch (err) {
       alert("Registration failed: " + err.message);
     }
@@ -33,8 +45,7 @@ export default function Register() {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      // Firebase will automatically update the auth state
-      navigate("/dashboard");
+      // AuthContext will update via onAuthStateChanged and trigger the useEffect above
     } catch (err) {
       alert("Google signup failed: " + err.message);
     }

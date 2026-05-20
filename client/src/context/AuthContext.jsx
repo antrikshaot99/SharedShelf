@@ -1,6 +1,9 @@
 import { createContext, useReducer, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
+import { gql } from '@apollo/client';
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
 
 /**
  * AuthContext - Centralized authentication state management
@@ -47,6 +50,42 @@ function authReducer(state, action) {
   }
 }
 
+// Create a standalone Apollo Client for AuthContext (used before ApolloProvider)
+const authLinkForContext = setContext(async (_, { headers }) => {
+  const user = auth.currentUser;
+  let token = null;
+  if (user) {
+    token = await user.getIdToken();
+  }
+  const authHeader = token ? `Bearer ${token}` : '';
+  return {
+    headers: {
+      ...headers,
+      authorization: authHeader,
+    }
+  };
+});
+
+const httpLinkForContext = new HttpLink({
+  uri: import.meta.env.VITE_API_URL || "http://localhost:5000/graphql",
+});
+
+const contextApolloClient = new ApolloClient({
+  link: authLinkForContext.concat(httpLinkForContext),
+  cache: new InMemoryCache(),
+});
+
+const GET_ME = gql`
+  query GetMe {
+    me {
+      id
+      name
+      email
+      role
+    }
+  }
+`;
+
 export function AuthProvider({ children }) {
   const [authState, dispatch] = useReducer(authReducer, initialState);
 
@@ -55,22 +94,57 @@ export function AuthProvider({ children }) {
    * This ensures the auth state is synced with Firebase Authentication
    */
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // User is signed in
-        user.getIdToken().then((token) => {
-          dispatch({
-            type: 'LOGIN',
-            payload: {
-              token,
-              user: {
-                id: user.uid,
-                name: user.displayName || user.email,
-                email: user.email,
-                role: 'user' // Default role, you can customize based on custom claims
+        user.getIdToken().then(async (token) => {
+          try {
+            // Create a temporary Apollo client with the token in headers
+            const tempClient = new ApolloClient({
+              link: new HttpLink({
+                uri: import.meta.env.VITE_API_URL || "http://localhost:5000/graphql",
+                headers: {
+                  authorization: `Bearer ${token}`
+                }
+              }),
+              cache: new InMemoryCache(),
+            });
+
+            // Fetch database user info to get the database ID with auth token
+            const response = await tempClient.query({ query: GET_ME });
+            const dbUser = response.data.me;
+            
+            console.log('✅ AuthContext - Database user fetched:', dbUser);
+            console.log('👤 AuthContext - User role:', dbUser.role);
+            
+            dispatch({
+              type: 'LOGIN',
+              payload: {
+                token,
+                user: {
+                  id: dbUser.id,  // Use database ID, not Firebase UID
+                  name: dbUser.name || user.displayName || user.email,
+                  email: dbUser.email || user.email,
+                  role: dbUser.role || 'user'
+                }
               }
-            }
-          });
+            });
+          } catch (error) {
+            console.warn('❌ Failed to fetch user from database:', error);
+            // Fallback to Firebase data if query fails
+            dispatch({
+              type: 'LOGIN',
+              payload: {
+                token,
+                user: {
+                  id: user.uid,
+                  name: user.displayName || user.email,
+                  email: user.email,
+                  role: 'user'
+                }
+              }
+            });
+          }
         });
       } else {
         // User is signed out

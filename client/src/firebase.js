@@ -7,13 +7,13 @@ import { getAuth } from "firebase/auth";
 // Your web app's Firebase configuration
 // Replace these values with your actual Firebase project config from the Firebase Console
 const firebaseConfig = {
-  apiKey: "AIzaSyB2kYZFVmP-eYvlVmQauZulLhEC8kUTxk4",
-  authDomain: "sharedshelf-37bf2.firebaseapp.com",
-  projectId: "sharedshelf-37bf2",
-  storageBucket: "sharedshelf-37bf2.firebasestorage.app",
-  messagingSenderId: "189238232683",
-  appId: "1:189238232683:web:577367dd9a18866aec932e",
-  measurementId: "G-W6FCTC5YN1"
+  apiKey: "AIzaSyBf1OzontZrlbzUAKjJfHeaBmD8ya8NzXo",
+  authDomain: "sharedshelf-7278b.firebaseapp.com",
+  projectId: "sharedshelf-7278b",
+  storageBucket: "sharedshelf-7278b.firebasestorage.app",
+  messagingSenderId: "437400819729",
+  appId: "1:437400819729:web:9d80822b171a56a2f339b0",
+  measurementId: "G-2B9Z3F3P9F"
 };
 
 // Initialize Firebase
