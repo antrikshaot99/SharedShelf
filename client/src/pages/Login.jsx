@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../firebase";
@@ -7,17 +7,31 @@ import Logo from "../components/Logo";
 
 export default function Login() {
   const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
 
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
+  // When auth state changes, redirect based on role
+  useEffect(() => {
+    if (authContext?.isLoggedIn && authContext?.user?.role) {
+      console.log('🔐 Login - User role detected:', authContext.user.role);
+      if (authContext.user.role === 'admin') {
+        console.log('➡️ Redirecting to Admin Dashboard');
+        navigate("/admin");
+      } else {
+        console.log('➡️ Redirecting to User Dashboard');
+        navigate("/dashboard");
+      }
+    }
+  }, [authContext?.isLoggedIn, authContext?.user?.role, navigate]);
+
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, form.email, form.password);
-      // Firebase will automatically update the auth state via onAuthStateChanged
-      navigate("/dashboard"); // Default to dashboard, you can customize based on user role
+      // AuthContext will update via onAuthStateChanged and trigger the useEffect above
     } catch (err) {
       alert("Login failed: " + err.message);
     }
@@ -27,8 +41,7 @@ export default function Login() {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      // Firebase will automatically update the auth state via onAuthStateChanged
-      navigate("/dashboard");
+      // AuthContext will update via onAuthStateChanged and trigger the useEffect above
     } catch (err) {
       alert("Google login failed: " + err.message);
     }

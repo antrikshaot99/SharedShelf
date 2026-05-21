@@ -1,6 +1,5 @@
 const { User } = require('../models');
 const jwt = require('jsonwebtoken');
-const admin = require('../utils/adminCreds');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'sharedshelf_secret_key_2026';
 
@@ -50,18 +49,6 @@ class UserService {
    * Authenticate user with email and password
    */
   static async login(email, password) {
-    // Check for hardcoded admin credentials
-    if (email === admin.email && password === admin.password) {
-      const adminUser = {
-        id: 0,
-        name: 'Admin',
-        email: admin.email,
-        role: 'admin'
-      };
-      const token = this.generateToken(adminUser);
-      return { token, user: adminUser };
-    }
-
     const user = await User.findOne({ where: { email } });
     if (!user) {
       throw new Error('Invalid credentials');
@@ -208,6 +195,16 @@ class UserService {
       throw new Error('User not found');
     }
     return user;
+  }
+
+  /**
+   * Get user by email (returns null if not found, doesn't throw)
+   */
+  static async getByEmail(email) {
+    return await User.findOne({ 
+      where: { email },
+      attributes: { exclude: ['password'] }
+    });
   }
 }
 

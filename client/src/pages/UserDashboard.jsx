@@ -489,13 +489,32 @@ export default function UserDashboard() {
     );
   }
 
-  const filteredBooks = selectedGenre === "All"
-    ? data.books
-    : selectedGenre === "Your Listings"
-      ? data.books.filter((b) => b.owner_id != null && authContext?.user?.id != null && String(b.owner_id) === String(authContext?.user?.id))
-      : data.books.filter((b) => b.genre === selectedGenre);
+  const filteredBooks = selectedGenre === "Your Listings"
+    ? data.books.filter((b) => b.owner_id != null && authContext?.user?.id != null && String(b.owner_id) === String(authContext?.user?.id))
+    : data.books
+      .filter((b) => {
+        // Exclude user's own books
+        if (authContext?.user?.id != null && b.owner_id != null && String(b.owner_id) === String(authContext?.user?.id)) {
+          return false;
+        }
+        
+        // Filter by genre
+        if (selectedGenre !== "All" && b.genre !== selectedGenre) {
+          return false;
+        }
+        
+        // Filter by mode (buy/rent)
+        if (mode === "buy" && !b.price) {
+          return false;
+        }
+        if (mode === "rent" && !b.rent_price) {
+          return false;
+        }
+        
+        return true;
+      });
 
-  const sectionTitle = selectedGenre === "All" ? "All Books" : selectedGenre;
+  const sectionTitle = selectedGenre === "All" ? (mode === "buy" ? "Books to Buy" : "Books to Rent") : selectedGenre;
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "var(--ink-100)" }}>

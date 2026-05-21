@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client/react";
+import { AuthContext } from "../context/AuthContext";
 import { GET_STATS, GET_BOOKS, GET_USERS, GET_ALL_ORDERS, GET_ALL_RENTALS } from "../graphql/queries";
 import { DELETE_BOOK, UPDATE_BOOK, UPDATE_USER_ROLE, DELETE_USER } from "../graphql/mutations";
 import Logo from "../components/Logo";
@@ -747,14 +748,20 @@ function SettingsTab() {
    ════════════════════════════════════════════════ */
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("Overview");
 
   const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("userRole");
-    navigate("/login");
+    // Call AuthContext logout method
+    authContext?.logout?.();
   };
+
+  // Redirect to login when logged out
+  useEffect(() => {
+    if (!authContext?.isLoggedIn) {
+      navigate("/login");
+    }
+  }, [authContext?.isLoggedIn, navigate]);
 
   const tabContent = {
     Overview: <OverviewTab />, Books: <BooksTab />, Users: <UsersTab />,

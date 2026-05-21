@@ -72,7 +72,7 @@ const authLink = setContext(async (operation, { headers }) => {
 
 // Defines the GraphQL server endpoint
 const httpLink = new HttpLink({
-  uri: "http://localhost:5000/graphql", // Your backend URL
+  uri: import.meta.env.VITE_API_URL || "http://localhost:5000/graphql", // Your backend URL
 });
 
 /* ─────────────────────────────────────────────

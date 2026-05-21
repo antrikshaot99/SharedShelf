@@ -34,3 +34,7 @@ logs/
 tmp/
 temp/
 *.tmp
+
+
+playwright-report
+test-results
