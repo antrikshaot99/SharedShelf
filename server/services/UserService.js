@@ -196,6 +196,16 @@ class UserService {
     }
     return user;
   }
+
+  /**
+   * Get user by email (returns null if not found, doesn't throw)
+   */
+  static async getByEmail(email) {
+    return await User.findOne({ 
+      where: { email },
+      attributes: { exclude: ['password'] }
+    });
+  }
 }
 
 module.exports = UserService;

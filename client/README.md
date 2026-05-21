@@ -14,3 +14,19 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Testing
+
+This project uses the following testing technologies:
+
+### **Playwright**
+- **Framework**: [Playwright](https://playwright.dev/) - End-to-end testing framework
+- **Language**: JavaScript
+- **Test Location**: `/tests/functional/`
+- **Command**: `npm test`
+
+Playwright is used for functional and end-to-end testing across different browsers (Chromium, Firefox, WebKit), ensuring the application works correctly in real-world scenarios.
+
+### Test Scripts
+- `npm test` - Run all Playwright tests
+- `npm run lint` - Run ESLint for code quality checks
