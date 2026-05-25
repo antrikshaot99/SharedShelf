@@ -325,7 +325,7 @@ export default function Register() {
             fontWeight: 800,
             color: "white",
             marginBottom: 16,
-          }}>Join Shared Self Today</h1>
+          }}>Join Shared Shelf Today</h1>
           <p style={{
             fontSize: 16,
             color: "rgba(255,255,255,0.85)",

@@ -154,7 +154,7 @@ function OverviewTab() {
         <div style={{ position: "absolute", right: -20, top: -20, fontSize: 120, opacity: 0.1 }}>📚</div>
         <div style={{ position: "relative", zIndex: 1 }}>
           <div style={{ fontSize: 13, fontWeight: 600, opacity: 0.85, marginBottom: 6 }}>Welcome back, Admin</div>
-          <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>Shared Self Dashboard</div>
+          <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>Shared Shelf Dashboard</div>
           <div style={{ fontSize: 14, opacity: 0.8 }}>
             {allBooks.length} books listed &bull; {allUsers.length} users registered &bull; ₹{totalRevenue.toFixed(0)} revenue
           </div>
@@ -656,7 +656,7 @@ function OrdersTab() {
    SETTINGS TAB
    ════════════════════════════════════════════════ */
 function SettingsTab() {
-  const [siteName, setSiteName] = useState("Shared Self");
+  const [siteName, setSiteName] = useState("Shared Shelf");
   const [saved, setSaved] = useState(false);
 
   const save = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
@@ -697,7 +697,7 @@ function SettingsTab() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           {[
-            ["Platform", "Shared Self v1.0", "🏠"],
+            ["Platform", "Shared Shelf v1.0", "🏠"],
             ["Backend", "GraphQL + MySQL", "⚡"],
             ["Frontend", "React + Vite", "💜"],
             ["Auth", "Local credentials", "🔐"],

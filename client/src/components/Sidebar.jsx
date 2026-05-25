@@ -115,7 +115,7 @@ export default function Sidebar({ userName, userEmail, onLogout }) {
           </svg>
         </div>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "var(--ink-900)" }}>Shared Self</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "var(--ink-900)" }}>Shared Shelf</div>
           <div style={{ fontSize: 11, color: "var(--ink-500)" }}>Book Marketplace</div>
         </div>
       </div>

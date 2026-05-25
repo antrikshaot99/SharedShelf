@@ -13,9 +13,10 @@ async function startServer() {
 
   const app = await createApp();
 
-  app.listen(5000, async () => {
+  const PORT = process.env.PORT || 4000;
+  app.listen(PORT, async () => {
 
-    console.log('🚀 Server running');
+    console.log(`🚀 Server running on port ${PORT}`);
 
     try {
       await EmailService.verifyConnection();

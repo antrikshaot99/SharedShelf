@@ -5,15 +5,15 @@ import { getAuth } from "firebase/auth";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-// Replace these values with your actual Firebase project config from the Firebase Console
+// These values are loaded from environment variables for security
 const firebaseConfig = {
-  apiKey: "AIzaSyBf1OzontZrlbzUAKjJfHeaBmD8ya8NzXo",
-  authDomain: "sharedshelf-7278b.firebaseapp.com",
-  projectId: "sharedshelf-7278b",
-  storageBucket: "sharedshelf-7278b.firebasestorage.app",
-  messagingSenderId: "437400819729",
-  appId: "1:437400819729:web:9d80822b171a56a2f339b0",
-  measurementId: "G-2B9Z3F3P9F"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

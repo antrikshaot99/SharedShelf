@@ -107,7 +107,7 @@ export default function Logo({ size = "md", variant = "default" }) {
           color: "var(--ink-900)",
           letterSpacing: "-0.02em",
         }}>
-          Shared Self
+          Shared Shelf
         </span>
       )}
     </div>

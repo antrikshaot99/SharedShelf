@@ -203,7 +203,7 @@ const HeroBanner = () => (
         fontSize: 28,
         fontWeight: 700,
         marginBottom: 8,
-      }}>Welcome to Shared Self</h1>
+      }}>Welcome to Shared Shelf</h1>
       <p style={{
         fontSize: 15,
         opacity: 0.9,

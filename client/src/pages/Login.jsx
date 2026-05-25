@@ -107,7 +107,7 @@ export default function Login() {
             fontWeight: 800,
             color: "white",
             marginBottom: 16,
-          }}>Welcome to Shared Self</h1>
+          }}>Welcome to Shared Shelf</h1>
           <p style={{
             fontSize: 16,
             color: "rgba(255,255,255,0.85)",
